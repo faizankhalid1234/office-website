@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# H.H Husain - Office Expense Management System
+
+Production-ready PWA for managing office expenses with a modern SaaS dashboard.
+
+## Tech Stack
+
+- **Next.js 16** (App Router) + TypeScript — Frontend dashboard
+- **Python Django** — User email & password backend + Admin panel
+- **Tailwind CSS** + **Shadcn UI**
+- **Prisma ORM** + **PostgreSQL** — Expenses data
+- **NextAuth** (JWT sessions, role-based access)
+- **Recharts** + **Framer Motion**
+- **PWA** (manifest + service worker)
+
+## Features
+
+- Dashboard with animated stats, charts, budget progress
+- Expense CRUD with receipt upload (image/PDF)
+- Category management (Admin)
+- Monthly reports with PDF/Excel export
+- Budget tracking with 80%/90%/100% alerts
+- Dark/Light mode
+- Mobile installable PWA
 
 ## Getting Started
 
-First, run the development server:
-
+**Terminal 1 — Django Auth Backend:**
 ```bash
+cd django-backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python setup.py
+python manage.py runserver
+```
+Admin panel: [http://localhost:8000/admin](http://localhost:8000/admin)
+
+**Terminal 2 — Next.js Frontend:**
+```bash
+npm install
+cp .env.example .env
+npm run db:push
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Demo Accounts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Role     | Email                  | Password     |
+|----------|------------------------|--------------|
+| Admin    | admin@hhhusain.com     | admin123     |
+| Employee | employee@hhhusain.com  | employee123  |
 
-## Learn More
+## Pages
 
-To learn more about Next.js, take a look at the following resources:
+| Route            | Access   | Description              |
+|------------------|----------|--------------------------|
+| `/`              | All      | Dashboard                |
+| `/expenses`      | All      | Expense list             |
+| `/expenses/add`  | All      | Add expense              |
+| `/categories`    | Admin    | Manage categories        |
+| `/reports`       | All      | Reports & export         |
+| `/budget`        | Admin    | Set monthly budget       |
+| `/settings`      | Admin    | App settings             |
+| `/auth/login`    | Public   | Sign in                  |
+| `/auth/register` | Public   | Register                 |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev        # Development server
+npm run build      # Production build
+npm run db:push    # Push schema to DB
+npm run db:seed    # Seed categories & users
+npm run icons      # Generate PWA icons
+```
 
-## Deploy on Vercel
+## PWA Install
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+On mobile/desktop Chrome: Menu → **Install app** or **Add to Home Screen**.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Admin Panels
+
+**Django Admin** (`http://localhost:8000/admin`) — Manage users:
+- Create/edit user email & password
+- Set Admin or Employee role
+- Disable accounts
+
+**Next.js App** — Admin role pages:
+- Categories, Budget, Settings

@@ -1,0 +1,511 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { Fuel, Coffee, UtensilsCrossed, Calculator } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { PAYMENT_METHODS } from "@/lib/constants";
+import {
+  QUICK_EXPENSE_TYPES,
+  TEA_ITEMS,
+  LUNCH_ITEMS,
+  type QuickExpenseType,
+  buildFuelTitle,
+  buildFuelDescription,
+  calcFuelTotal,
+  buildTeaTitle,
+  buildLunchTitle,
+} from "@/lib/quick-expense";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils-format";
+
+interface Category {
+  id: string;
+  name: string;
+  color: string;
+}
+
+const ICONS = {
+  fuel: Fuel,
+  tea: Coffee,
+  lunch: UtensilsCrossed,
+};
+
+interface QuickExpenseProps {
+  categories: Category[];
+  compact?: boolean;
+}
+
+export function QuickExpense({ categories, compact = false }: QuickExpenseProps) {
+  const router = useRouter();
+  const [activeType, setActiveType] = useState<QuickExpenseType | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const [fuel, setFuel] = useState({
+    liters: "",
+    ratePerLiter: "",
+    totalAmount: "",
+    note: "",
+    paymentMethod: "CASH",
+    date: format(new Date(), "yyyy-MM-dd"),
+  });
+
+  const [tea, setTea] = useState({
+    item: TEA_ITEMS[0],
+    amount: "",
+    note: "",
+    paymentMethod: "CASH",
+    date: format(new Date(), "yyyy-MM-dd"),
+  });
+
+  const [lunch, setLunch] = useState({
+    item: LUNCH_ITEMS[0],
+    amount: "",
+    people: "",
+    note: "",
+    paymentMethod: "CASH",
+    date: format(new Date(), "yyyy-MM-dd"),
+  });
+
+  function getCategoryId(name: string) {
+    return categories.find((c) => c.name === name)?.id ?? "";
+  }
+
+  async function submitExpense(data: {
+    title: string;
+    amount: number;
+    categoryId: string;
+    description?: string;
+    paymentMethod: string;
+    date: string;
+  }) {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/expenses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error ?? "Failed to save");
+      toast.success("Expense added!");
+      setActiveType(null);
+      resetForms();
+      router.refresh();
+      if (!compact) router.push("/expenses");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function resetForms() {
+    const today = format(new Date(), "yyyy-MM-dd");
+    setFuel({ liters: "", ratePerLiter: "", totalAmount: "", note: "", paymentMethod: "CASH", date: today });
+    setTea({ item: TEA_ITEMS[0], amount: "", note: "", paymentMethod: "CASH", date: today });
+    setLunch({ item: LUNCH_ITEMS[0], amount: "", people: "", note: "", paymentMethod: "CASH", date: today });
+  }
+
+  async function handleFuelSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const categoryId = getCategoryId("Petrol");
+    if (!categoryId) return toast.error("Petrol category not found");
+    const amount = parseFloat(fuel.totalAmount);
+    if (!amount || amount <= 0) return toast.error("Total amount is required");
+
+    await submitExpense({
+      title: buildFuelTitle(fuel.liters, fuel.totalAmount),
+      amount,
+      categoryId,
+      description: buildFuelDescription(fuel.liters, fuel.ratePerLiter, fuel.note),
+      paymentMethod: fuel.paymentMethod,
+      date: fuel.date,
+    });
+  }
+
+  async function handleTeaSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const categoryId = getCategoryId("Tea & Refreshments");
+    if (!categoryId) return toast.error("Tea category not found");
+    const amount = parseFloat(tea.amount);
+    if (!amount || amount <= 0) return toast.error("Amount is required");
+
+    await submitExpense({
+      title: buildTeaTitle(tea.item),
+      amount,
+      categoryId,
+      description: tea.note || `${tea.item} - office tea/snacks`,
+      paymentMethod: tea.paymentMethod,
+      date: tea.date,
+    });
+  }
+
+  async function handleLunchSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const categoryId = getCategoryId("Staff Lunch");
+    if (!categoryId) return toast.error("Lunch category not found");
+    const amount = parseFloat(lunch.amount);
+    if (!amount || amount <= 0) return toast.error("Amount is required");
+
+    const desc = [
+      lunch.item,
+      lunch.people ? `${lunch.people} people` : "",
+      lunch.note,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
+    await submitExpense({
+      title: buildLunchTitle(lunch.item, lunch.people),
+      amount,
+      categoryId,
+      description: desc,
+      paymentMethod: lunch.paymentMethod,
+      date: lunch.date,
+    });
+  }
+
+  const fuelCalc =
+    fuel.liters && fuel.ratePerLiter
+      ? parseFloat(calcFuelTotal(fuel.liters, fuel.ratePerLiter) || "0")
+      : 0;
+
+  return (
+    <>
+      <div className="glass-card p-5 md:p-6">
+        <div className="mb-4">
+          <h3 className="text-base font-bold">Quick Add</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Quickly record fuel, tea, or lunch expenses
+          </p>
+        </div>
+        <div className={cn("grid gap-3", compact ? "grid-cols-3" : "sm:grid-cols-3")}>
+          {QUICK_EXPENSE_TYPES.map((type, i) => {
+            const Icon = ICONS[type.icon as keyof typeof ICONS];
+            return (
+              <motion.button
+                key={type.id}
+                type="button"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.03, y: -2 }}
+                transition={{ delay: i * 0.08 }}
+                onClick={() => setActiveType(type.id)}
+                className="flex flex-col items-center gap-2.5 rounded-2xl border border-border/40 bg-gradient-to-b from-white/80 to-white/40 p-4 text-center shadow-sm transition-all hover:border-indigo-300/50 hover:shadow-lg hover:shadow-indigo-500/10 dark:from-white/10 dark:to-white/5"
+              >
+                <div
+                  className="flex h-12 w-12 items-center justify-center rounded-2xl shadow-md"
+                  style={{ background: `linear-gradient(135deg, ${type.color}, ${type.color}99)` }}
+                >
+                  <Icon className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">{type.label}</p>
+                  <p className="text-[11px] text-muted-foreground">{type.subtitle}</p>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Fuel Dialog */}
+      <Dialog open={activeType === "fuel"} onOpenChange={(o) => !o && setActiveType(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Fuel className="h-5 w-5 text-red-500" />
+              Add Fuel Expense
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleFuelSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Liters</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  placeholder="e.g. 20"
+                  value={fuel.liters}
+                  onChange={(e) => setFuel({ ...fuel, liters: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Rate / liter (Rs.)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="e.g. 280"
+                  value={fuel.ratePerLiter}
+                  onChange={(e) => setFuel({ ...fuel, ratePerLiter: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {fuelCalc > 0 && (
+              <div className="flex items-center gap-2 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-400">
+                <Calculator className="h-4 w-4" />
+                Auto total: <strong>{formatCurrency(fuelCalc)}</strong>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="ml-auto h-7 text-xs"
+                  onClick={() => setFuel({ ...fuel, totalAmount: fuelCalc.toString() })}
+                >
+                  Use this
+                </Button>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label>Total Amount (Rs.) *</Label>
+              <Input
+                type="number"
+                min="1"
+                required
+                placeholder="Total fuel cost"
+                value={fuel.totalAmount}
+                onChange={(e) => setFuel({ ...fuel, totalAmount: e.target.value })}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Date</Label>
+                <Input
+                  type="date"
+                  value={fuel.date}
+                  onChange={(e) => setFuel({ ...fuel, date: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Payment</Label>
+                <Select
+                  value={fuel.paymentMethod}
+                  onValueChange={(v) => v && setFuel({ ...fuel, paymentMethod: v })}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PAYMENT_METHODS.map((p) => (
+                      <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Note (optional)</Label>
+              <Textarea
+                placeholder="Vehicle number, pump name..."
+                value={fuel.note}
+                onChange={(e) => setFuel({ ...fuel, note: e.target.value })}
+                rows={2}
+              />
+            </div>
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Saving..." : "Add Fuel Expense"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Tea Dialog */}
+      <Dialog open={activeType === "tea"} onOpenChange={(o) => !o && setActiveType(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Coffee className="h-5 w-5 text-amber-500" />
+              Tea & Snacks
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleTeaSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>What was purchased?</Label>
+              <Select
+                value={tea.item}
+                onValueChange={(v) => v && setTea({ ...tea, item: v })}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {TEA_ITEMS.map((item) => (
+                    <SelectItem key={item} value={item}>{item}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Amount (Rs.) *</Label>
+              <Input
+                type="number"
+                min="1"
+                required
+                placeholder="Amount"
+                value={tea.amount}
+                onChange={(e) => setTea({ ...tea, amount: e.target.value })}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Date</Label>
+                <Input
+                  type="date"
+                  value={tea.date}
+                  onChange={(e) => setTea({ ...tea, date: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Payment</Label>
+                <Select
+                  value={tea.paymentMethod}
+                  onValueChange={(v) => v && setTea({ ...tea, paymentMethod: v })}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PAYMENT_METHODS.map((p) => (
+                      <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Note (optional)</Label>
+              <Textarea
+                placeholder="Number of cups, purpose..."
+                value={tea.note}
+                onChange={(e) => setTea({ ...tea, note: e.target.value })}
+                rows={2}
+              />
+            </div>
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Saving..." : "Add Tea Expense"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Lunch Dialog */}
+      <Dialog open={activeType === "lunch"} onOpenChange={(o) => !o && setActiveType(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UtensilsCrossed className="h-5 w-5 text-orange-500" />
+              Lunch / Meals
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleLunchSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Meal type</Label>
+              <Select
+                value={lunch.item}
+                onValueChange={(v) => v && setLunch({ ...lunch, item: v })}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {LUNCH_ITEMS.map((item) => (
+                    <SelectItem key={item} value={item}>{item}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Number of people (optional)</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  placeholder="e.g. 5"
+                  value={lunch.people}
+                  onChange={(e) => setLunch({ ...lunch, people: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Amount (Rs.) *</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  required
+                  placeholder="Amount"
+                  value={lunch.amount}
+                  onChange={(e) => setLunch({ ...lunch, amount: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Date</Label>
+                <Input
+                  type="date"
+                  value={lunch.date}
+                  onChange={(e) => setLunch({ ...lunch, date: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Payment</Label>
+                <Select
+                  value={lunch.paymentMethod}
+                  onValueChange={(v) => v && setLunch({ ...lunch, paymentMethod: v })}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PAYMENT_METHODS.map((p) => (
+                      <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Note (optional)</Label>
+              <Textarea
+                placeholder="Restaurant, guest lunch..."
+                value={lunch.note}
+                onChange={(e) => setLunch({ ...lunch, note: e.target.value })}
+                rows={2}
+              />
+            </div>
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Saving..." : "Add Lunch Expense"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
