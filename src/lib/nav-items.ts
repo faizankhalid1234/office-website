@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 export const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/expenses", label: "Expenses", icon: Receipt },
   { href: "/expenses/add", label: "Add Expense", icon: PlusCircle, highlight: true },
   { href: "/categories", label: "Categories", icon: Tags, adminOnly: true },

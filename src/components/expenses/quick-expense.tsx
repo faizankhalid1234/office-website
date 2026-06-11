@@ -192,36 +192,41 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
 
   return (
     <>
-      <div className="glass-card p-5 md:p-6">
-        <div className="mb-4">
-          <h3 className="text-base font-bold">Quick Add</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Quickly record fuel, tea, or lunch expenses
-          </p>
-        </div>
-        <div className={cn("grid gap-3", compact ? "grid-cols-3" : "sm:grid-cols-3")}>
+      <div className={cn(compact ? "soft-card p-4" : "soft-card p-5 md:p-6")}>
+        {!compact && (
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold text-foreground">Quick Add</h3>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Fuel, tea, or lunch — tap to add
+            </p>
+          </div>
+        )}
+        <div className={cn("grid gap-2", compact ? "grid-cols-3" : "sm:grid-cols-3")}>
           {QUICK_EXPENSE_TYPES.map((type, i) => {
             const Icon = ICONS[type.icon as keyof typeof ICONS];
             return (
               <motion.button
                 key={type.id}
                 type="button"
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.03, y: -2 }}
-                transition={{ delay: i * 0.08 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ delay: i * 0.06 }}
                 onClick={() => setActiveType(type.id)}
-                className="flex flex-col items-center gap-2.5 rounded-2xl border border-border/40 bg-gradient-to-b from-white/80 to-white/40 p-4 text-center shadow-sm transition-all hover:border-indigo-300/50 hover:shadow-lg hover:shadow-indigo-500/10 dark:from-white/10 dark:to-white/5"
+                className="flex flex-col items-center gap-2 rounded-2xl border border-border/40 bg-muted/20 p-3 text-center transition hover:border-indigo-300/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10"
               >
                 <div
-                  className="flex h-12 w-12 items-center justify-center rounded-2xl shadow-md"
-                  style={{ background: `linear-gradient(135deg, ${type.color}, ${type.color}99)` }}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl shadow-sm"
+                  style={{ backgroundColor: type.color }}
                 >
-                  <Icon className="h-6 w-6 text-white" />
+                  <Icon className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold">{type.label}</p>
-                  <p className="text-[11px] text-muted-foreground">{type.subtitle}</p>
+                  <p className="text-xs font-semibold text-foreground">{type.label}</p>
+                  {!compact && (
+                    <p className="text-[10px] text-muted-foreground">{type.subtitle}</p>
+                  )}
                 </div>
               </motion.button>
             );

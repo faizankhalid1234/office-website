@@ -23,7 +23,7 @@ export const authConfig: NextAuthConfig = {
 
       if (isStatic) return true;
       if (isPublic) {
-        if (isLoggedIn) return Response.redirect(new URL("/", nextUrl));
+        if (isLoggedIn) return Response.redirect(new URL("/dashboard", nextUrl));
         return true;
       }
       if (!isLoggedIn) return false;
@@ -31,7 +31,7 @@ export const authConfig: NextAuthConfig = {
       const adminRoutes = ["/categories", "/budget", "/settings"];
       const isAdminRoute = adminRoutes.some((route) => nextUrl.pathname.startsWith(route));
       if (isAdminRoute && auth?.user?.role !== "ADMIN") {
-        return Response.redirect(new URL("/", nextUrl));
+        return Response.redirect(new URL("/dashboard", nextUrl));
       }
 
       return true;

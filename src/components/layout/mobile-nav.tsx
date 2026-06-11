@@ -22,15 +22,17 @@ export function MobileNav() {
         </div>
         <div>
           <p className="text-sm font-bold text-white">{COMPANY_NAME}</p>
-          <p className="text-[11px] text-indigo-200/70">Expense Manager</p>
+          <p className="text-[11px] text-white/60">Expense Manager</p>
         </div>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-2">
         {filteredItems.map((item) => {
           const Icon = item.icon;
           const isActive =
-            pathname === item.href ||
-            (item.href !== "/" && pathname.startsWith(item.href));
+            item.href === "/dashboard"
+              ? pathname === "/dashboard" || pathname.startsWith("/dashboard/")
+              : pathname === item.href ||
+                (item.href !== "/" && pathname.startsWith(`${item.href}/`));
 
           return (
             <Link

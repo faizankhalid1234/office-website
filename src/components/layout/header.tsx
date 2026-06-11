@@ -52,7 +52,7 @@ export function Header() {
 
         <div className="hidden lg:block">
           <p className="text-xs text-muted-foreground">{today}</p>
-          <p className="text-base font-semibold">
+          <p className="text-base font-semibold text-foreground">
             Hello, <span className="gradient-text">{session?.user?.name?.split(" ")[0]}</span> 👋
           </p>
         </div>

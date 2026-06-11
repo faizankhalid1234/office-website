@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Award, ArrowUpRight, ArrowDownRight, Hash, Wallet } from "lucide-react";
 import { formatCurrency } from "@/lib/utils-format";
+import { cn } from "@/lib/utils";
 
 interface InsightCardsProps {
   monthCount: number;
@@ -27,58 +28,65 @@ export function InsightCards({
     {
       label: "Transactions",
       value: monthCount.toString(),
-      sub: "This month",
       icon: Hash,
-      color: "from-blue-500 to-cyan-500",
+      iconBg: "bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400",
     },
     {
       label: "Top Category",
       value: highestCategory?.name ?? "—",
-      sub: highestCategory ? formatCurrency(highestCategory.value) : "No data",
+      sub: highestCategory ? formatCurrency(highestCategory.value) : null,
       icon: Award,
-      color: "from-violet-500 to-purple-500",
+      iconBg: "bg-violet-100 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400",
       dot: highestCategory?.color,
     },
     {
       label: "vs Last Month",
       value: `${isUp ? "+" : ""}${comparison.toFixed(1)}%`,
-      sub: `Prev: ${formatCurrency(lastMonthTotal)}`,
       icon: isUp ? ArrowUpRight : ArrowDownRight,
-      color: isUp ? "from-orange-500 to-red-500" : "from-emerald-500 to-teal-500",
+      iconBg: isUp
+        ? "bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400"
+        : "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
     },
     {
       label: "Budget Left",
-      value: budgetRemaining !== null ? formatCurrency(budgetRemaining) : "—",
-      sub: budgetRemaining !== null ? "Remaining this month" : "Not set",
+      value: budgetRemaining !== null ? formatCurrency(budgetRemaining) : "Not set",
       icon: Wallet,
-      color: "from-indigo-500 to-violet-500",
+      iconBg: "bg-sky-100 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400",
     },
   ];
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="soft-card divide-y divide-border/40">
       {items.map((item, i) => (
         <motion.div
           key={item.label}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.06 }}
-          className="glass-card flex items-center gap-4 p-4"
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: i * 0.05 }}
+          className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-muted/30"
         >
-          <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${item.color} shadow-md`}>
-            <item.icon className="h-5 w-5 text-white" />
+          <div
+            className={cn(
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+              item.iconBg
+            )}
+          >
+            <item.icon className="h-4 w-4" />
           </div>
-          <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {item.label}
-            </p>
-            <p className="flex items-center gap-1.5 text-sm font-bold truncate">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm text-muted-foreground">{item.label}</p>
+            <p className="flex items-center gap-1.5 truncate text-base font-semibold text-foreground md:text-lg">
               {"dot" in item && item.dot && (
-                <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: item.dot }} />
+                <span
+                  className="h-2 w-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: item.dot }}
+                />
               )}
               {item.value}
             </p>
-            <p className="text-[11px] text-muted-foreground truncate">{item.sub}</p>
+            {"sub" in item && item.sub && (
+              <p className="text-sm text-muted-foreground">{item.sub}</p>
+            )}
           </div>
         </motion.div>
       ))}

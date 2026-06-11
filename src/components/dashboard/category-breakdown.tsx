@@ -12,46 +12,52 @@ interface CategoryItem {
 export function CategoryBreakdown({ data, total }: { data: CategoryItem[]; total: number }) {
   if (!data.length) {
     return (
-      <div className="glass-card flex h-48 items-center justify-center text-sm text-muted-foreground">
-        No category expenses this month
+      <div className="soft-card flex h-40 items-center justify-center text-sm text-muted-foreground">
+        No expenses this month
       </div>
     );
   }
 
   return (
-    <div className="glass-card overflow-hidden">
-      <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 border-b border-border/50 px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-        <span>Category</span>
-        <span className="text-right">Amount</span>
-        <span className="text-right w-14">Share</span>
+    <div className="soft-card overflow-hidden">
+      <div className="border-b border-border/40 px-5 py-4">
+        <h3 className="text-sm font-semibold text-foreground">Category Breakdown</h3>
+        <p className="text-xs text-muted-foreground">Where your money went</p>
       </div>
-      <div className="divide-y divide-border/30">
+      <div className="space-y-1 p-3">
         {data.map((cat, i) => {
           const pct = total > 0 ? (cat.value / total) * 100 : 0;
           return (
             <motion.div
               key={cat.name}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: i * 0.04 }}
-              className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 px-5 py-3.5 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 transition-colors"
+              className="rounded-2xl px-3 py-2.5 transition-colors hover:bg-muted/40"
             >
-              <div className="flex items-center gap-3 min-w-0">
-                <div
-                  className="h-3 w-3 rounded-full shrink-0 ring-2 ring-white dark:ring-background"
+              <div className="mb-1.5 flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span
+                    className="h-2.5 w-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: cat.color }}
+                  />
+                  <span className="truncate text-sm font-medium text-foreground">{cat.name}</span>
+                </div>
+                <div className="shrink-0 text-right">
+                  <span className="text-sm font-semibold text-foreground">
+                    {formatCurrency(cat.value)}
+                  </span>
+                  <span className="ml-2 text-xs text-muted-foreground">{pct.toFixed(0)}%</span>
+                </div>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-muted/60">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 0.7, delay: i * 0.05 }}
+                  className="h-full rounded-full"
                   style={{ backgroundColor: cat.color }}
                 />
-                <span className="text-sm font-medium truncate">{cat.name}</span>
-              </div>
-              <span className="text-sm font-bold text-right">{formatCurrency(cat.value)}</span>
-              <div className="w-14 text-right">
-                <span className="text-xs font-semibold text-muted-foreground">{pct.toFixed(0)}%</span>
-                <div className="mt-1 h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{ width: `${pct}%`, backgroundColor: cat.color }}
-                  />
-                </div>
               </div>
             </motion.div>
           );

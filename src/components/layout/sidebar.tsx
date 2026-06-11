@@ -23,12 +23,12 @@ export function Sidebar() {
         </div>
         <div>
           <p className="text-sm font-bold leading-tight text-white">{COMPANY_NAME}</p>
-          <p className="text-[11px] text-indigo-200/70">Expense Manager</p>
+          <p className="text-[11px] text-white/60">Expense Manager</p>
         </div>
       </div>
 
       <div className="mx-4 mb-4 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm">
-        <div className="flex items-center gap-2 text-xs text-indigo-200/80">
+        <div className="flex items-center gap-2 text-xs text-white/70">
           <Sparkles className="h-3.5 w-3.5 text-amber-300" />
           <span>Smart expense tracking</span>
         </div>
@@ -38,15 +38,17 @@ export function Sidebar() {
         {filteredItems.map((item) => {
           const Icon = item.icon;
           const isActive =
-            pathname === item.href ||
-            (item.href !== "/" && pathname.startsWith(item.href));
+            item.href === "/dashboard"
+              ? pathname === "/dashboard" || pathname.startsWith("/dashboard/")
+              : pathname === item.href ||
+                (item.href !== "/" && pathname.startsWith(`${item.href}/`));
 
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200",
+                "group flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-all duration-200 md:text-base",
                 isActive
                   ? "bg-gradient-to-r from-indigo-500/90 to-violet-500/90 text-white shadow-lg shadow-indigo-500/30"
                   : "text-white/70 hover:bg-white/8 hover:text-white",
@@ -63,8 +65,8 @@ export function Sidebar() {
       <div className="border-t border-white/10 p-4">
         <div className="rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-600/20 p-4 border border-white/10">
           <p className="text-xs font-medium text-white">{session?.user?.name ?? "User"}</p>
-          <p className="text-[10px] text-indigo-200/60 mt-0.5 truncate">{session?.user?.email}</p>
-          <span className="mt-2 inline-block rounded-full bg-indigo-500/30 px-2 py-0.5 text-[10px] font-semibold text-indigo-100">
+          <p className="text-[10px] text-white/50 mt-0.5 truncate">{session?.user?.email}</p>
+          <span className="mt-2 inline-block rounded-full bg-indigo-500/30 px-2 py-0.5 text-[10px] font-semibold text-white/90">
             {session?.user?.role ?? "EMPLOYEE"}
           </span>
         </div>

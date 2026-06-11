@@ -68,7 +68,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       }
 
       toast.success("Welcome back!");
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {

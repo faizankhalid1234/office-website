@@ -12,11 +12,27 @@ const ICONS: Record<string, LucideIcon> = {
   receipt: Receipt,
 };
 
-const GLOW_MAP: Record<string, string> = {
-  calendar: "stat-glow-blue",
-  trending: "stat-glow-purple",
-  wallet: "stat-glow-green",
-  receipt: "stat-glow-orange",
+const STYLES: Record<string, { bg: string; icon: string; accent: string }> = {
+  calendar: {
+    bg: "bg-sky-50 dark:bg-sky-500/10",
+    icon: "bg-sky-500 text-white",
+    accent: "border-sky-200 dark:border-sky-500/20",
+  },
+  trending: {
+    bg: "bg-violet-50 dark:bg-violet-500/10",
+    icon: "bg-violet-500 text-white",
+    accent: "border-violet-200 dark:border-violet-500/20",
+  },
+  wallet: {
+    bg: "bg-emerald-50 dark:bg-emerald-500/10",
+    icon: "bg-emerald-500 text-white",
+    accent: "border-emerald-200 dark:border-emerald-500/20",
+  },
+  receipt: {
+    bg: "bg-amber-50 dark:bg-amber-500/10",
+    icon: "bg-amber-500 text-white",
+    accent: "border-amber-200 dark:border-amber-500/20",
+  },
 };
 
 interface StatCardProps {
@@ -24,54 +40,40 @@ interface StatCardProps {
   value: number;
   icon: keyof typeof ICONS;
   trend?: string;
-  gradient?: string;
   index?: number;
 }
 
-export function StatCard({ title, value, icon, trend, gradient, index = 0 }: StatCardProps) {
+export function StatCard({ title, value, icon, trend, index = 0 }: StatCardProps) {
   const Icon = ICONS[icon];
+  const style = STYLES[icon];
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      transition={{ duration: 0.35, delay: index * 0.06 }}
+      whileHover={{ y: -2 }}
+      className={cn("soft-card border p-5", style.accent, style.bg)}
     >
-      <div
-        className={cn(
-          "glass-card relative overflow-hidden p-5 transition-all duration-300 hover:shadow-2xl",
-          GLOW_MAP[icon]
-        )}
-      >
+      <div className="flex items-center justify-between">
         <div
           className={cn(
-            "absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-20 blur-2xl",
-            gradient ?? "bg-indigo-500"
+            "flex h-11 w-11 items-center justify-center rounded-xl shadow-sm",
+            style.icon
           )}
-        />
-        <div className="relative flex items-start justify-between">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {title}
-            </p>
-            <p className="text-2xl font-extrabold tracking-tight lg:text-3xl">
-              {formatCurrency(value)}
-            </p>
-            {trend && (
-              <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">{trend}</p>
-            )}
-          </div>
-          <div
-            className={cn(
-              "flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg",
-              gradient ?? "bg-gradient-to-br from-indigo-500 to-violet-600"
-            )}
-          >
-            <Icon className="h-5 w-5 text-white" />
-          </div>
+        >
+          <Icon className="h-5 w-5" />
         </div>
+        {trend && (
+          <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+            {trend}
+          </span>
+        )}
       </div>
+      <p className="mt-4 text-sm font-medium text-muted-foreground md:text-base">{title}</p>
+      <p className="mt-1 text-2xl font-bold tracking-tight text-foreground tabular-nums md:text-3xl">
+        {formatCurrency(value)}
+      </p>
     </motion.div>
   );
 }
