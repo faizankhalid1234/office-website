@@ -20,6 +20,7 @@ export default async function SettingsPage() {
           role: session?.user?.role ?? "EMPLOYEE",
         }}
         companyName={COMPANY_NAME}
+        djangoApiUrl={(process.env.DJANGO_API_URL ?? "http://localhost:8000").replace(/\/$/, "")}
       />
     </div>
   );

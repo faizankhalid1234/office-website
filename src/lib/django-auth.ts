@@ -1,4 +1,6 @@
-const DJANGO_API_URL = process.env.DJANGO_API_URL ?? "http://localhost:8000";
+const DJANGO_API_URL = (
+  process.env.DJANGO_API_URL ?? "http://localhost:8000"
+).replace(/\/$/, "");
 const FETCH_TIMEOUT = 8000;
 
 async function fetchWithTimeout(url: string, options: RequestInit) {
