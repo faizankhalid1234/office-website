@@ -1,4 +1,4 @@
-# Production Docker — Railway deploy (NOT next dev)
+# Production Docker — Railway deploy
 FROM node:22-alpine AS base
 WORKDIR /app
 RUN apk add --no-cache openssl
@@ -32,4 +32,6 @@ COPY --from=builder /app/scripts/railway-start.sh ./scripts/railway-start.sh
 RUN chmod +x ./scripts/railway-start.sh
 
 EXPOSE 3000
-CMD ["sh", "scripts/railway-start.sh"]
+
+# Inline start — no old --skip-generate flags
+CMD ["sh", "-c", "export HOSTNAME=0.0.0.0 PORT=${PORT:-3000} && echo '[start] db push...' && npx prisma db push --config=prisma.config.ts --accept-data-loss && echo '[start] seed...' && (npx tsx prisma/seed.ts || true) && echo '[start] next on 0.0.0.0:'$PORT && exec npx next start -H 0.0.0.0 -p $PORT"]
