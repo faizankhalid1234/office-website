@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { registerSchema } from "@/lib/validations";
-import { djangoRegister } from "@/lib/django-auth";
-import { syncUserToPrisma } from "@/lib/sync-user";
+import { registerUser } from "@/lib/auth-service";
 
 export async function POST(req: Request) {
   try {
@@ -15,7 +14,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const result = await djangoRegister({
+    const result = await registerUser({
       name: parsed.data.name,
       email: parsed.data.email,
       password: parsed.data.password,
@@ -25,15 +24,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
 
-    const prismaUser = await syncUserToPrisma(result.user);
-
     return NextResponse.json(
       {
         user: {
-          id: prismaUser.id,
-          name: prismaUser.name,
-          email: prismaUser.email,
-          role: prismaUser.role,
+          id: result.user.id,
+          name: result.user.name,
+          email: result.user.email,
+          role: result.user.role,
         },
       },
       { status: 201 }

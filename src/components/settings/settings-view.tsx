@@ -13,11 +13,10 @@ import { Button } from "@/components/ui/button";
 interface SettingsViewProps {
   user: { name: string; email: string; role: string };
   companyName: string;
-  djangoApiUrl?: string;
+  djangoAdminUrl?: string;
 }
 
-export function SettingsView({ user, companyName, djangoApiUrl = "http://localhost:8000" }: SettingsViewProps) {
-  const djangoAdminUrl = `${djangoApiUrl}/admin`;
+export function SettingsView({ user, companyName, djangoAdminUrl }: SettingsViewProps) {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -61,7 +60,7 @@ export function SettingsView({ user, companyName, djangoApiUrl = "http://localho
         </CardContent>
       </Card>
 
-      {user.role === "ADMIN" && (
+      {user.role === "ADMIN" && djangoAdminUrl && (
         <Card className="border-border/50 bg-card/60 backdrop-blur-xl border-primary/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">

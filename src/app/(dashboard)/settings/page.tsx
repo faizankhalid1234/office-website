@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { SettingsView } from "@/components/settings/settings-view";
 import { COMPANY_NAME } from "@/lib/constants";
+import { getDjangoAdminUrl, usesDjangoAuth } from "@/lib/auth-service";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -20,7 +21,7 @@ export default async function SettingsPage() {
           role: session?.user?.role ?? "EMPLOYEE",
         }}
         companyName={COMPANY_NAME}
-        djangoApiUrl={(process.env.DJANGO_API_URL ?? "http://localhost:8000").replace(/\/$/, "")}
+        djangoAdminUrl={usesDjangoAuth() ? getDjangoAdminUrl() : undefined}
       />
     </div>
   );
