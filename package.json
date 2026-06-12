@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start -p ${PORT:-3000}",
+    "build": "prisma generate && prisma db push --skip-generate && next build",
+    "start": "prisma db push --skip-generate && next start -p ${PORT:-3000}",
+    "railway:setup": "prisma db push && npm run db:seed",
     "lint": "eslint",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

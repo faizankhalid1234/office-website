@@ -37,9 +37,11 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     console.error("[register] Failed:", error);
-    const message =
-      error instanceof Error && error.message.includes("connect")
-        ? "Database connection failed. Please try again later."
+    const errMsg = error instanceof Error ? error.message : "Unknown error";
+    const message = errMsg.includes("connect") || errMsg.includes("P1001")
+      ? "Database connection failed. Check DATABASE_URL on Railway."
+      : errMsg.includes("does not exist") || errMsg.includes("P2021")
+        ? "Database tables missing. Redeploy to run schema setup."
         : "Registration failed. Please try again.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
