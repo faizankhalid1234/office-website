@@ -5,7 +5,6 @@ RUN apk add --no-cache openssl
 
 FROM base AS deps
 COPY package.json package-lock.json* ./
-# Skip postinstall — prisma schema not copied yet
 RUN npm ci --ignore-scripts
 
 FROM base AS builder
@@ -18,6 +17,7 @@ RUN npx prisma generate && npm run build
 FROM base AS runner
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME=0.0.0.0
 WORKDIR /app
 
 COPY --from=builder /app/package.json ./
@@ -28,6 +28,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./
 COPY --from=builder /app/src/generated ./src/generated
+COPY --from=builder /app/scripts/railway-start.sh ./scripts/railway-start.sh
+RUN chmod +x ./scripts/railway-start.sh
 
 EXPOSE 3000
-CMD ["npm", "run", "railway:start"]
+CMD ["sh", "scripts/railway-start.sh"]

@@ -7,7 +7,8 @@ dockerfilePath = "Dockerfile"
 [deploy]
 restartPolicyType = "on_failure"
 healthcheckPath = "/auth/login"
-healthcheckTimeout = 300
+healthcheckTimeout = 600
+healthcheckInterval = 15
 
 [env]
 NODE_ENV = "production"
