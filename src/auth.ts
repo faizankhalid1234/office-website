@@ -15,21 +15,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const parsed = loginSchema.safeParse({
-          email: String(credentials?.email ?? "").trim().toLowerCase(),
-          password: credentials?.password,
-        });
-        if (!parsed.success) return null;
+        try {
+          const parsed = loginSchema.safeParse({
+            email: String(credentials?.email ?? "").trim().toLowerCase(),
+            password: credentials?.password,
+          });
+          if (!parsed.success) return null;
 
-        const result = await loginUser(parsed.data.email, parsed.data.password);
-        if ("error" in result) return null;
+          const result = await loginUser(parsed.data.email, parsed.data.password);
+          if ("error" in result) return null;
 
-        return {
-          id: result.user.id,
-          name: result.user.name,
-          email: result.user.email,
-          role: result.user.role,
-        };
+          return {
+            id: result.user.id,
+            name: result.user.name,
+            email: result.user.email,
+            role: result.user.role,
+          };
+        } catch (error) {
+          console.error("[auth] Login failed:", error);
+          return null;
+        }
       },
     }),
   ],

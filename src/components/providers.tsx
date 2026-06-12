@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
+    <SessionProvider refetchInterval={0} refetchOnWindowFocus={false} basePath="/api/auth">
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         {children}
         <Toaster richColors position="top-right" />

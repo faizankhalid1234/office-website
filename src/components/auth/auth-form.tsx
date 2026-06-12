@@ -47,6 +47,18 @@ export function AuthForm({ mode }: AuthFormProps) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Registration failed");
 
+        const loginAfterRegister = await signIn("credentials", {
+          email: form.email.trim().toLowerCase(),
+          password: form.password,
+          redirect: false,
+        });
+
+        if (loginAfterRegister?.ok) {
+          toast.success("Account created! Welcome!");
+          window.location.href = "/dashboard";
+          return;
+        }
+
         toast.success("Account created! Please sign in.");
         router.push("/auth/login");
         return;
@@ -64,7 +76,16 @@ export function AuthForm({ mode }: AuthFormProps) {
       }
 
       if (result.error) {
-        toast.error("Invalid email or password");
+        toast.error(
+          result.error === "CredentialsSignin"
+            ? "Invalid email or password"
+            : "Login failed. Check your connection and try again."
+        );
+        return;
+      }
+
+      if (!result.ok) {
+        toast.error("Login failed. Please try again.");
         return;
       }
 

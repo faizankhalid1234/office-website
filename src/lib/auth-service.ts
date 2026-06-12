@@ -2,32 +2,14 @@ import { djangoLogin, djangoRegister } from "@/lib/django-auth";
 import { prismaLogin, prismaRegister, type AuthUser } from "@/lib/prisma-auth";
 import { syncUserToPrisma } from "@/lib/sync-user";
 
-function normalizeUrl(url: string) {
-  return url.replace(/\/$/, "");
-}
-
-function getDjangoApiUrl() {
-  return normalizeUrl(process.env.DJANGO_API_URL ?? "http://localhost:8000");
-}
-
-function getAppUrl() {
-  const url =
-    process.env.NEXTAUTH_URL ??
-    process.env.AUTH_URL ??
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-  return normalizeUrl(url);
-}
-
-/** Django runs separately on localhost in dev; production uses Prisma + PostgreSQL. */
+/** Set USE_DJANGO_AUTH=true only when Django runs on localhost:8000 */
 export function usesDjangoAuth() {
-  const django = getDjangoApiUrl();
-  const app = getAppUrl();
-  if (django === app) return false;
-  return django.includes("localhost") || django.includes("127.0.0.1");
+  return process.env.USE_DJANGO_AUTH === "true";
 }
 
 export function getDjangoAdminUrl() {
-  return `${getDjangoApiUrl()}/admin`;
+  const base = (process.env.DJANGO_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
+  return `${base}/admin`;
 }
 
 export async function loginUser(

@@ -35,7 +35,12 @@ export async function POST(req: Request) {
       },
       { status: 201 }
     );
-  } catch {
-    return NextResponse.json({ error: "Registration failed" }, { status: 500 });
+  } catch (error) {
+    console.error("[register] Failed:", error);
+    const message =
+      error instanceof Error && error.message.includes("connect")
+        ? "Database connection failed. Please try again later."
+        : "Registration failed. Please try again.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
