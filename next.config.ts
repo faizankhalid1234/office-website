@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  allowedDevOrigins: [
+    "office-website-production.up.railway.app",
+    "localhost:3000",
+  ],
 };
 
 export default nextConfig;
