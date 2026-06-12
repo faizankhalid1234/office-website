@@ -1,11 +1,12 @@
-# Production Docker — Railway will use this instead of npm run dev
-FROM node:20-alpine AS base
+# Production Docker — Railway deploy (NOT next dev)
+FROM node:22-alpine AS base
 WORKDIR /app
 RUN apk add --no-cache openssl
 
 FROM base AS deps
 COPY package.json package-lock.json* ./
-RUN npm ci
+# Skip postinstall — prisma schema not copied yet
+RUN npm ci --ignore-scripts
 
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
@@ -20,6 +21,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 WORKDIR /app
 
 COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package-lock.json* ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
