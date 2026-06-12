@@ -1,17 +1,19 @@
 import { BudgetManager } from "@/components/budget/budget-manager";
 import { getCurrentBudget } from "@/lib/expense-service";
+import { requireUser } from "@/lib/require-user";
 import { prisma } from "@/lib/prisma";
 import { decimalToNumber } from "@/lib/utils-format";
 import { startOfMonth, endOfMonth } from "date-fns";
 
 export default async function BudgetPage() {
+  const user = await requireUser();
   const now = new Date();
   const budget = await getCurrentBudget();
   const start = startOfMonth(now);
   const end = endOfMonth(now);
 
   const spent = await prisma.expense.aggregate({
-    where: { date: { gte: start, lte: end } },
+    where: { userId: user.id, date: { gte: start, lte: end } },
     _sum: { amount: true },
   });
 

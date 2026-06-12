@@ -16,6 +16,7 @@ export async function GET(req: Request) {
 
   const expenses = await prisma.expense.findMany({
     where: {
+      userId: session.user.id,
       ...(categoryId ? { categoryId } : {}),
       ...(search
         ? {

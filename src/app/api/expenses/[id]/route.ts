@@ -18,7 +18,7 @@ export async function GET(_req: Request, { params }: Params) {
     include: { category: true, user: { select: { name: true, email: true } } },
   });
 
-  if (!expense) {
+  if (!expense || expense.userId !== session.user.id) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -38,7 +38,7 @@ export async function PUT(req: Request, { params }: Params) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  if (session.user.role !== "ADMIN" && existing.userId !== session.user.id) {
+  if (existing.userId !== session.user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -87,7 +87,7 @@ export async function DELETE(_req: Request, { params }: Params) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  if (session.user.role !== "ADMIN" && existing.userId !== session.user.id) {
+  if (existing.userId !== session.user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

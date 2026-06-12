@@ -1,9 +1,11 @@
 import { RecentExpenses } from "@/components/dashboard/recent-expenses";
 import { SectionHeader } from "@/components/dashboard/section-header";
 import { getExpenseStats } from "@/lib/expense-service";
+import { requireUser } from "@/lib/require-user";
 
 export default async function DashboardRecentPage() {
-  const stats = await getExpenseStats();
+  const user = await requireUser();
+  const stats = await getExpenseStats(user.id);
 
   return (
     <div className="space-y-4">

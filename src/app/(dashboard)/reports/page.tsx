@@ -1,14 +1,16 @@
 import { ReportsView } from "@/components/reports/reports-view";
 import { getMonthlyReport, getTrendData } from "@/lib/expense-service";
+import { requireUser } from "@/lib/require-user";
 
 export default async function ReportsPage() {
+  const user = await requireUser();
   const now = new Date();
   const month = now.getMonth() + 1;
   const year = now.getFullYear();
 
   const [report, trendData] = await Promise.all([
-    getMonthlyReport(month, year),
-    getTrendData(),
+    getMonthlyReport(user.id, month, year),
+    getTrendData(user.id),
   ]);
 
   return (

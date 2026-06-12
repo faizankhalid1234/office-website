@@ -91,7 +91,7 @@ export function AuthForm({ mode }: AuthFormProps) {
 
         <div className="relative space-y-8">
           <div>
-            <p className="text-lg text-indigo-100/90">
+            <p className="text-sm text-indigo-100/90">
               Smart office expense management for your team
             </p>
           </div>
@@ -102,7 +102,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 border border-white/10">
                   <f.icon className="h-4 w-4" />
                 </div>
-                <span className="text-sm font-medium">{f.text}</span>
+                <span className="text-xs font-medium">{f.text}</span>
               </div>
             ))}
           </div>
@@ -126,21 +126,21 @@ export function AuthForm({ mode }: AuthFormProps) {
                 {mode === "login" ? "Welcome back" : "Get started"}
               </span>
             </div>
-            <h2 className="text-2xl font-extrabold tracking-tight">
+            <h2 className="text-xl font-bold tracking-tight">
               {mode === "login" ? "Sign in to your account" : "Create your account"}
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground">
               {mode === "login"
                 ? "Enter your credentials to access the dashboard"
                 : "Set your name, email & password"}
             </p>
           </div>
 
-          <div className="glass-card p-6 md:p-8">
-            <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="glass-card p-5 md:p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {mode === "register" && (
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <div className="space-y-1.5">
+                  <Label htmlFor="name" className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                     Full Name
                   </Label>
                   <Input
@@ -148,13 +148,13 @@ export function AuthForm({ mode }: AuthFormProps) {
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="John Doe"
-                    className="h-11 rounded-xl border-border/60 bg-background/50"
+                    className="h-10 rounded-xl border-border/60 bg-background/50 text-sm"
                     required
                   />
                 </div>
               )}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                   Email
                 </Label>
                 <Input
@@ -163,12 +163,12 @@ export function AuthForm({ mode }: AuthFormProps) {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder="you@company.com"
-                  className="h-11 rounded-xl border-border/60 bg-background/50"
+                  className="h-10 rounded-xl border-border/60 bg-background/50 text-sm"
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                   Password
                 </Label>
                 <Input
@@ -177,14 +177,14 @@ export function AuthForm({ mode }: AuthFormProps) {
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   placeholder="••••••••"
-                  className="h-11 rounded-xl border-border/60 bg-background/50"
+                  className="h-10 rounded-xl border-border/60 bg-background/50 text-sm"
                   minLength={6}
                   required
                 />
               </div>
               <Button
                 type="submit"
-                className="h-11 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-sm font-semibold shadow-lg shadow-indigo-500/30 hover:from-indigo-500 hover:to-violet-500"
+                className="h-10 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-xs font-semibold shadow-lg shadow-indigo-500/30 hover:from-indigo-500 hover:to-violet-500"
                 disabled={loading}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -194,7 +194,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               </Button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-muted-foreground">
+            <p className="mt-5 text-center text-xs text-muted-foreground">
               {mode === "login" ? (
                 <>
                   Don&apos;t have an account?{" "}
@@ -213,8 +213,8 @@ export function AuthForm({ mode }: AuthFormProps) {
             </p>
 
             {mode === "login" && (
-              <div className="mt-5 rounded-2xl bg-indigo-50/80 p-4 text-xs text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
-                <p className="font-semibold mb-1.5">Demo Login</p>
+              <div className="mt-4 rounded-2xl bg-indigo-50/80 p-3 text-[11px] text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
+                <p className="font-semibold mb-1">Demo Login</p>
                 <p>admin@hhhusain.com / admin123</p>
               </div>
             )}

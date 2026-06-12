@@ -1,18 +1,19 @@
 import { StatCard } from "@/components/dashboard/stat-card";
 import { DashboardHero } from "@/components/dashboard/dashboard-hero";
 import { getExpenseStats } from "@/lib/expense-service";
-import { auth } from "@/auth";
+import { requireUser } from "@/lib/require-user";
 import { format } from "date-fns";
 
 export default async function DashboardOverviewPage() {
-  const [stats, session] = await Promise.all([getExpenseStats(), auth()]);
+  const user = await requireUser();
+  const stats = await getExpenseStats(user.id);
 
   const monthChange =
     stats.lastMonthTotal > 0
       ? ((stats.totals.month - stats.lastMonthTotal) / stats.lastMonthTotal) * 100
       : 0;
 
-  const firstName = session?.user?.name?.split(" ")[0] ?? "there";
+  const firstName = user.name?.split(" ")[0] ?? "there";
   const today = format(new Date(), "EEEE, MMMM d, yyyy");
 
   return (

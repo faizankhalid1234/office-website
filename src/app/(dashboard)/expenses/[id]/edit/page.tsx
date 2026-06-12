@@ -1,15 +1,17 @@
 import { notFound } from "next/navigation";
 import { ExpenseForm } from "@/components/expenses/expense-form";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/require-user";
 import { decimalToNumber } from "@/lib/utils-format";
 
 type Params = { params: Promise<{ id: string }> };
 
 export default async function EditExpensePage({ params }: Params) {
+  const user = await requireUser();
   const { id } = await params;
 
   const [expense, categories] = await Promise.all([
-    prisma.expense.findUnique({ where: { id } }),
+    prisma.expense.findFirst({ where: { id, userId: user.id } }),
     prisma.category.findMany({ orderBy: { name: "asc" } }),
   ]);
 

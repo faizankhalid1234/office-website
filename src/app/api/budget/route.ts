@@ -23,7 +23,7 @@ export async function GET() {
   const end = endOfMonth(now);
 
   const spent = await prisma.expense.aggregate({
-    where: { date: { gte: start, lte: end } },
+    where: { userId: session.user.id, date: { gte: start, lte: end } },
     _sum: { amount: true },
   });
 

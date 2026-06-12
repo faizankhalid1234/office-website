@@ -8,51 +8,57 @@ import {
   eachMonthOfInterval,
   subYears,
 } from "date-fns";
+import type { Prisma } from "@/generated/prisma/client";
 
-export async function getExpenseStats() {
+function withUser(userId: string, where: Prisma.ExpenseWhereInput = {}) {
+  return { ...where, userId };
+}
+
+export async function getExpenseStats(userId: string) {
   const ranges = getDateRanges();
 
   const [today, week, month, year, recentExpenses, categoryBreakdown, monthlyData, budget, lastMonthTotal, monthCount] =
     await Promise.all([
       prisma.expense.aggregate({
-        where: { date: { gte: ranges.today } },
+        where: withUser(userId, { date: { gte: ranges.today } }),
         _sum: { amount: true },
       }),
       prisma.expense.aggregate({
-        where: { date: { gte: ranges.week } },
+        where: withUser(userId, { date: { gte: ranges.week } }),
         _sum: { amount: true },
       }),
       prisma.expense.aggregate({
-        where: { date: { gte: ranges.month } },
+        where: withUser(userId, { date: { gte: ranges.month } }),
         _sum: { amount: true },
       }),
       prisma.expense.aggregate({
-        where: { date: { gte: ranges.year } },
+        where: withUser(userId, { date: { gte: ranges.year } }),
         _sum: { amount: true },
       }),
       prisma.expense.findMany({
+        where: { userId },
         take: 8,
         orderBy: { date: "desc" },
         include: { category: true, user: { select: { name: true } } },
       }),
       prisma.expense.groupBy({
         by: ["categoryId"],
-        where: { date: { gte: ranges.month } },
+        where: withUser(userId, { date: { gte: ranges.month } }),
         _sum: { amount: true },
       }),
-      getMonthlyExpenseData(),
+      getMonthlyExpenseData(userId),
       getCurrentBudget(),
       prisma.expense.aggregate({
-        where: {
+        where: withUser(userId, {
           date: {
             gte: ranges.lastMonth,
             lt: ranges.lastMonthEnd,
           },
-        },
+        }),
         _sum: { amount: true },
       }),
       prisma.expense.count({
-        where: { date: { gte: ranges.month } },
+        where: withUser(userId, { date: { gte: ranges.month } }),
       }),
     ]);
 
@@ -101,14 +107,14 @@ export async function getExpenseStats() {
   };
 }
 
-async function getMonthlyExpenseData() {
+async function getMonthlyExpenseData(userId: string) {
   const end = new Date();
   const start = subYears(end, 1);
   const months = eachMonthOfInterval({ start, end });
 
   const expenses = await prisma.expense.groupBy({
     by: ["date"],
-    where: { date: { gte: start } },
+    where: withUser(userId, { date: { gte: start } }),
     _sum: { amount: true },
   });
 
@@ -133,7 +139,7 @@ export async function getCurrentBudget() {
   });
 }
 
-export async function getMonthlyReport(month: number, year: number) {
+export async function getMonthlyReport(userId: string, month: number, year: number) {
   const start = startOfMonth(new Date(year, month - 1));
   const end = endOfMonth(start);
   const prevStart = startOfMonth(subMonths(start, 1));
@@ -141,12 +147,12 @@ export async function getMonthlyReport(month: number, year: number) {
 
   const [expenses, prevTotal, categories] = await Promise.all([
     prisma.expense.findMany({
-      where: { date: { gte: start, lte: end } },
+      where: withUser(userId, { date: { gte: start, lte: end } }),
       include: { category: true },
       orderBy: { date: "desc" },
     }),
     prisma.expense.aggregate({
-      where: { date: { gte: prevStart, lte: prevEnd } },
+      where: withUser(userId, { date: { gte: prevStart, lte: prevEnd } }),
       _sum: { amount: true },
     }),
     prisma.category.findMany(),
@@ -186,12 +192,12 @@ export async function getMonthlyReport(month: number, year: number) {
   };
 }
 
-export async function getTrendData() {
+export async function getTrendData(userId: string) {
   const end = new Date();
   const start = subYears(end, 1);
 
   const expenses = await prisma.expense.findMany({
-    where: { date: { gte: start } },
+    where: withUser(userId, { date: { gte: start } }),
     select: { date: true, amount: true },
     orderBy: { date: "asc" },
   });

@@ -1,12 +1,16 @@
 import { ExpensesList } from "@/components/expenses/expenses-list";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/require-user";
 import { decimalToNumber } from "@/lib/utils-format";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
 export default async function ExpensesPage() {
+  const user = await requireUser();
+
   const [expenses, categories] = await Promise.all([
     prisma.expense.findMany({
+      where: { userId: user.id },
       include: { category: true, user: { select: { name: true } } },
       orderBy: { date: "desc" },
     }),

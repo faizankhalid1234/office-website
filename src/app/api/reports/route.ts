@@ -12,6 +12,6 @@ export async function GET(req: Request) {
   const month = parseInt(searchParams.get("month") ?? String(new Date().getMonth() + 1));
   const year = parseInt(searchParams.get("year") ?? String(new Date().getFullYear()));
 
-  const report = await getMonthlyReport(month, year);
+  const report = await getMonthlyReport(session.user.id, month, year);
   return NextResponse.json(report);
 }
