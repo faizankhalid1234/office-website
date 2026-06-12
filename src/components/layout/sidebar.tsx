@@ -42,7 +42,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                 active
                   ? "bg-gradient-to-r from-indigo-500/90 to-violet-500/90 text-white shadow-lg shadow-indigo-500/30"
                   : "text-white/70 hover:bg-white/8 hover:text-white",
-                "highlight" in item && item.highlight && !active && "border border-dashed border-indigo-400/30"
+                item.highlight && !active && "border border-dashed border-indigo-400/30"
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
