@@ -1,37 +1,21 @@
 import sharp from "sharp";
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const iconsDir = path.join(__dirname, "..", "public", "icons");
-
-const svg = `
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6366f1"/>
-      <stop offset="100%" style="stop-color:#8b5cf6"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" rx="96" fill="url(#grad)"/>
-  <text x="256" y="200" font-family="Arial,sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">HH</text>
-  <text x="256" y="300" font-family="Arial,sans-serif" font-size="48" fill="white" text-anchor="middle" opacity="0.9">Expense</text>
-  <rect x="120" y="340" width="272" height="8" rx="4" fill="white" opacity="0.6"/>
-  <rect x="120" y="370" width="200" height="8" rx="4" fill="white" opacity="0.4"/>
-  <rect x="120" y="400" width="240" height="8" rx="4" fill="white" opacity="0.5"/>
-</svg>
-`;
+const svgPath = path.join(iconsDir, "icon.svg");
 
 async function main() {
   await mkdir(iconsDir, { recursive: true });
+  const svg = await readFile(svgPath, "utf8");
   const buffer = Buffer.from(svg);
 
   await sharp(buffer).resize(192, 192).png().toFile(path.join(iconsDir, "icon-192.png"));
   await sharp(buffer).resize(512, 512).png().toFile(path.join(iconsDir, "icon-512.png"));
 
-  await writeFile(path.join(iconsDir, "icon.svg"), svg);
-  console.log("Icons generated!");
+  console.log("Icons generated from icon.svg!");
 }
 
 main().catch(console.error);

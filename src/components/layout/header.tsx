@@ -15,15 +15,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { MobileNav } from "@/components/layout/mobile-nav";
+import { SidebarContent } from "@/components/layout/sidebar";
 import { Badge } from "@/components/ui/badge";
-import { COMPANY_NAME } from "@/lib/constants";
+import { CompanyLogo } from "@/components/brand/company-logo";
 import { format } from "date-fns";
 
 export function Header() {
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
   const today = format(new Date(), "EEEE, MMM d");
+  const firstName = session?.user?.name?.split(" ")[0];
 
   const initials = session?.user?.name
     ?.split(" ")
@@ -33,35 +34,39 @@ export function Header() {
     .slice(0, 2) ?? "U";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/40 bg-white/70 backdrop-blur-2xl dark:bg-background/70">
-      <div className="flex h-[68px] items-center justify-between px-4 lg:px-8">
-        <div className="flex items-center gap-3 lg:hidden">
+    <header className="sticky top-0 z-40 border-b border-border/40 bg-white/80 backdrop-blur-2xl dark:bg-background/80">
+      <div className="safe-px flex h-14 min-h-[56px] items-center justify-between gap-2 sm:h-[64px] md:h-[68px] md:gap-4 lg:px-8">
+        {/* Menu button — same sidebar, opens in drawer on small screens */}
+        <div className="flex min-w-0 flex-1 items-center gap-2 md:hidden">
           <Sheet>
             <SheetTrigger
-              className="inline-flex size-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400"
+              className="touch-target inline-flex shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400"
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" />
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 border-0 bg-transparent p-0 text-white">
-              <MobileNav />
+            <SheetContent
+              side="left"
+              className="w-[min(100vw-2rem,280px)] max-w-[85vw] border-0 bg-transparent p-0"
+            >
+              <SidebarContent />
             </SheetContent>
           </Sheet>
-          <span className="font-bold text-sm gradient-text">{COMPANY_NAME}</span>
+          <CompanyLogo size="sm" showText subtitle={firstName ? `Hi, ${firstName}` : "Expense Manager"} />
         </div>
 
-        <div className="hidden lg:block">
-          <p className="text-xs text-muted-foreground">{today}</p>
-          <p className="text-base font-semibold text-foreground">
-            Hello, <span className="gradient-text">{session?.user?.name?.split(" ")[0]}</span> 👋
+        <div className="hidden min-w-0 md:block">
+          <p className="text-xs text-muted-foreground lg:text-sm">{today}</p>
+          <p className="truncate text-sm font-semibold text-foreground lg:text-base">
+            Hello, <span className="gradient-text">{firstName}</span> 👋
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-xl text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
+            className="touch-target hidden rounded-xl text-muted-foreground hover:bg-indigo-50 hover:text-indigo-600 sm:inline-flex dark:hover:bg-indigo-500/10"
           >
             <Bell className="h-4 w-4" />
           </Button>
@@ -69,7 +74,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
+            className="touch-target relative rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 text-amber-500 transition-all dark:-rotate-90 dark:scale-0" />
@@ -77,8 +82,8 @@ export function Header() {
           </Button>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-full outline-none ring-2 ring-transparent transition-all hover:ring-indigo-200 focus-visible:ring-indigo-400 dark:hover:ring-indigo-500/30">
-              <Avatar className="h-10 w-10">
+            <DropdownMenuTrigger className="touch-target rounded-full outline-none ring-2 ring-transparent transition-all hover:ring-indigo-200 focus-visible:ring-indigo-400 dark:hover:ring-indigo-500/30">
+              <Avatar className="h-9 w-9 sm:h-10 sm:w-10">
                 <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-violet-600 text-xs font-bold text-white">
                   {initials}
                 </AvatarFallback>
@@ -92,7 +97,7 @@ export function Header() {
                     <span className="text-xs font-normal text-muted-foreground">
                       {session?.user?.email}
                     </span>
-                    <Badge className="w-fit mt-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
+                    <Badge className="mt-1 w-fit bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
                       {session?.user?.role}
                     </Badge>
                   </div>

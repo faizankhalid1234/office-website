@@ -53,7 +53,7 @@ export function BudgetProgress({ amount, used, remaining, percentage }: BudgetPr
       </div>
 
       <div className="space-y-4 p-5">
-        <div className="grid grid-cols-3 gap-2 text-center">
+        <div className="grid grid-cols-1 gap-2 text-center min-[400px]:grid-cols-3 sm:gap-3">
           <div className="rounded-2xl bg-muted/40 px-2 py-3">
             <p className="text-[10px] text-muted-foreground">Budget</p>
             <p className="mt-0.5 text-sm font-bold text-foreground">{formatCurrency(amount)}</p>

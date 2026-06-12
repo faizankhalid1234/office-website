@@ -16,10 +16,10 @@ export default async function DashboardOverviewPage() {
   const today = format(new Date(), "EEEE, MMMM d, yyyy");
 
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="w-full min-w-0 space-y-5 sm:space-y-6 md:space-y-8">
       <DashboardHero firstName={firstName} today={today} />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:gap-4 lg:grid-cols-4">
         <StatCard title="Today" value={stats.totals.today} icon="calendar" index={0} />
         <StatCard title="This Week" value={stats.totals.week} icon="trending" index={1} />
         <StatCard

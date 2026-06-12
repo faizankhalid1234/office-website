@@ -1,7 +1,8 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Building2, Moon, Sun, Monitor, User, Shield, ExternalLink, Users } from "lucide-react";
+import { Moon, Sun, Monitor, User, Shield, ExternalLink, Users } from "lucide-react";
+import { CompanyLogo } from "@/components/brand/company-logo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -21,13 +22,11 @@ export function SettingsView({ user, companyName }: SettingsViewProps) {
     <div className="grid gap-6 max-w-2xl">
       <Card className="border-border/50 bg-card/60 backdrop-blur-xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Building2 className="h-4 w-4" />
-            Company
-          </CardTitle>
+          <CardTitle className="text-base">Company</CardTitle>
           <CardDescription>Organization details</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
+          <CompanyLogo size="lg" subtitle="Expense Manager" />
           <div>
             <p className="text-sm text-muted-foreground">Company Name</p>
             <p className="font-semibold">{companyName}</p>

@@ -13,57 +13,18 @@ export function DashboardSubNav() {
   const pathname = usePathname();
 
   return (
-    <>
-      {/* Desktop sidebar */}
-      <aside className="hidden w-60 shrink-0 lg:block lg:w-64">
-        <div className="soft-card sticky top-[76px] overflow-hidden p-3 lg:top-[84px]">
-          <p className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Menu
-          </p>
-          <nav className="space-y-1">
-            {dashboardNavItems.map((item) => {
-              const Icon = item.icon;
-              const active = isNavActive(pathname, item.href);
+    <aside className="relative z-20 w-full shrink-0 md:w-52 lg:w-60 xl:w-64">
+      <nav
+        className={cn(
+          "soft-card flex gap-2 overflow-x-auto p-2",
+          "snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          "md:sticky md:top-[68px] md:flex-col md:gap-0.5 md:overflow-visible md:p-3 lg:top-[72px]"
+        )}
+      >
+        <p className="hidden px-3 py-2 text-xs font-bold uppercase tracking-wider text-muted-foreground md:block">
+          Menu
+        </p>
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-start gap-3 rounded-xl px-3 py-3 transition-all",
-                    active
-                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
-                      : "text-foreground hover:bg-muted/60"
-                  )}
-                >
-                  <Icon
-                    className={cn(
-                      "mt-0.5 h-5 w-5 shrink-0",
-                      active ? "text-white" : "text-indigo-500"
-                    )}
-                  />
-                  <div className="min-w-0">
-                    <p className={cn("text-sm font-semibold md:text-base", active && "text-white")}>
-                      {item.label}
-                    </p>
-                    <p
-                      className={cn(
-                        "text-xs md:text-sm",
-                        active ? "text-white/80" : "text-muted-foreground"
-                      )}
-                    >
-                      {item.description}
-                    </p>
-                  </div>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      </aside>
-
-      {/* Mobile & tablet horizontal nav */}
-      <nav className="soft-card -mx-1 flex gap-2 overflow-x-auto p-2 lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {dashboardNavItems.map((item) => {
           const Icon = item.icon;
           const active = isNavActive(pathname, item.href);
@@ -72,19 +33,49 @@ export function DashboardSubNav() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={(e) => {
+                if (active) {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
               className={cn(
-                "flex shrink-0 flex-col items-center gap-1 rounded-xl px-4 py-2.5 min-w-[72px] transition-all",
+                "flex shrink-0 snap-start cursor-pointer transition-all pointer-events-auto",
+                "min-h-[68px] min-w-[76px] flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2",
+                "md:min-h-0 md:min-w-0 md:w-full md:flex-row md:items-start md:gap-2.5 md:rounded-xl md:px-3 md:py-2.5 lg:gap-3 lg:py-3",
                 active
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "bg-muted/30 text-foreground hover:bg-muted/50"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+                  : "bg-muted/30 text-foreground hover:bg-muted/60 md:bg-transparent active:scale-95"
               )}
             >
-              <Icon className="h-5 w-5" />
-              <span className="text-xs font-semibold whitespace-nowrap">{item.label}</span>
+              <Icon
+                className={cn(
+                  "h-5 w-5 shrink-0 pointer-events-none md:mt-0.5 md:h-4 md:w-4 lg:h-5 lg:w-5",
+                  active ? "text-white" : "text-indigo-500"
+                )}
+              />
+              <span className="min-w-0 flex-1 pointer-events-none text-center md:text-left">
+                <span
+                  className={cn(
+                    "block text-[11px] font-semibold whitespace-nowrap md:text-sm lg:text-base",
+                    active ? "text-white" : "text-foreground"
+                  )}
+                >
+                  {item.label}
+                </span>
+                <span
+                  className={cn(
+                    "hidden text-xs text-muted-foreground lg:block lg:text-sm",
+                    active && "text-white/80"
+                  )}
+                >
+                  {item.description}
+                </span>
+              </span>
             </Link>
           );
         })}
       </nav>
-    </>
+    </aside>
   );
 }

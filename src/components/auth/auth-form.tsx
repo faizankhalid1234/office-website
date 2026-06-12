@@ -5,7 +5,8 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Building2, Loader2, Shield, BarChart3, Wallet, Sparkles } from "lucide-react";
+import { Loader2, Shield, BarChart3, Wallet, Sparkles } from "lucide-react";
+import { CompanyLogo } from "@/components/brand/company-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -85,17 +86,12 @@ export function AuthForm({ mode }: AuthFormProps) {
         <div className="absolute -right-10 bottom-20 h-60 w-60 rounded-full bg-violet-400/20 blur-3xl" />
 
         <div className="relative">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm border border-white/20">
-            <Building2 className="h-7 w-7 text-white" />
-          </div>
+          <CompanyLogo size="xl" subtitle="Expense Manager" variant="light" />
         </div>
 
         <div className="relative space-y-8">
           <div>
-            <h1 className="text-4xl font-extrabold text-white leading-tight">
-              {COMPANY_NAME}
-            </h1>
-            <p className="mt-3 text-lg text-indigo-100/80">
+            <p className="text-lg text-indigo-100/90">
               Smart office expense management for your team
             </p>
           </div>
@@ -121,11 +117,8 @@ export function AuthForm({ mode }: AuthFormProps) {
       <div className="mesh-bg flex flex-1 items-center justify-center p-6 md:p-12">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center lg:text-left">
-            <div className="mb-4 flex items-center justify-center gap-2 lg:hidden">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600">
-                <Building2 className="h-5 w-5 text-white" />
-              </div>
-              <span className="font-bold gradient-text">{COMPANY_NAME}</span>
+            <div className="mb-4 flex justify-center lg:hidden">
+              <CompanyLogo size="md" subtitle="Expense Manager" />
             </div>
             <div className="mb-2 flex items-center gap-2 justify-center lg:justify-start">
               <Sparkles className="h-4 w-4 text-indigo-500" />

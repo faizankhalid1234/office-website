@@ -134,12 +134,12 @@ export function ReportsView({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => exportToPDF(report)}>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <Button variant="outline" className="w-full sm:w-auto" onClick={() => exportToPDF(report)}>
             <Download className="mr-2 h-4 w-4" />
             Export PDF
           </Button>
-          <Button variant="outline" onClick={() => exportToExcel(report)}>
+          <Button variant="outline" className="w-full sm:w-auto" onClick={() => exportToExcel(report)}>
             <FileSpreadsheet className="mr-2 h-4 w-4" />
             Export Excel
           </Button>
@@ -216,6 +216,7 @@ export function ReportsView({
               <CardTitle className="text-base">Category Breakdown</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="table-scroll">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -239,6 +240,7 @@ export function ReportsView({
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
 
@@ -247,6 +249,7 @@ export function ReportsView({
               <CardTitle className="text-base">All Transactions</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="table-scroll">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -273,6 +276,7 @@ export function ReportsView({
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         </>

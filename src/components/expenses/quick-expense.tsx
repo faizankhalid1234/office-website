@@ -201,7 +201,14 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
             </p>
           </div>
         )}
-        <div className={cn("grid gap-2", compact ? "grid-cols-3" : "sm:grid-cols-3")}>
+        <div
+          className={cn(
+            "grid gap-2 sm:gap-3",
+            compact
+              ? "grid-cols-1 min-[400px]:grid-cols-3"
+              : "grid-cols-1 sm:grid-cols-3"
+          )}
+        >
           {QUICK_EXPENSE_TYPES.map((type, i) => {
             const Icon = ICONS[type.icon as keyof typeof ICONS];
             return (
@@ -214,18 +221,18 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
                 whileTap={{ scale: 0.98 }}
                 transition={{ delay: i * 0.06 }}
                 onClick={() => setActiveType(type.id)}
-                className="flex flex-col items-center gap-2 rounded-2xl border border-border/40 bg-muted/20 p-3 text-center transition hover:border-indigo-300/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10"
+                className="flex min-h-[88px] flex-col items-center justify-center gap-2 rounded-2xl border border-border/40 bg-muted/20 p-3 text-center transition hover:border-indigo-300/50 hover:bg-indigo-50/50 sm:min-h-0 dark:hover:bg-indigo-500/10"
               >
                 <div
-                  className="flex h-11 w-11 items-center justify-center rounded-xl shadow-sm"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm sm:h-12 sm:w-12"
                   style={{ backgroundColor: type.color }}
                 >
                   <Icon className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-foreground">{type.label}</p>
+                  <p className="text-sm font-semibold text-foreground sm:text-base">{type.label}</p>
                   {!compact && (
-                    <p className="text-[10px] text-muted-foreground">{type.subtitle}</p>
+                    <p className="text-xs text-muted-foreground">{type.subtitle}</p>
                   )}
                 </div>
               </motion.button>

@@ -272,4 +272,25 @@
   .dark .welcome-strip {
     background: linear-gradient(135deg, oklch(0.2 0.03 276) 0%, oklch(0.17 0.035 280) 100%);
   }
+
+  .safe-px {
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+  }
+
+  .safe-pb {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .chart-wrap {
+    @apply h-[220px] w-full min-w-0 sm:h-[250px] md:h-[280px];
+  }
+
+  .table-scroll {
+    @apply -mx-1 overflow-x-auto px-1;
+  }
+
+  .touch-target {
+    @apply min-h-11 min-w-11;
+  }
 }

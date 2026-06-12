@@ -53,7 +53,7 @@ export function RecentExpenses({ expenses }: { expenses: RecentExpense[] }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: i * 0.03 }}
-              className="flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-muted/30"
+              className="flex items-center gap-2 px-4 py-3 transition-colors hover:bg-muted/30 sm:gap-3 sm:px-5 sm:py-3.5"
             >
               <div
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[10px] font-bold text-white"

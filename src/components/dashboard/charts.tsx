@@ -65,17 +65,17 @@ function ChartBox({
   empty?: boolean;
 }) {
   return (
-    <div className="soft-card flex h-full flex-col overflow-hidden">
-      <div className="border-b border-border/40 px-5 py-4">
-        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
-        <p className="text-xs text-muted-foreground">{subtitle}</p>
+    <div className="soft-card flex h-full w-full min-w-0 flex-col overflow-hidden">
+      <div className="border-b border-border/40 px-4 py-3 sm:px-5 sm:py-4">
+        <h3 className="text-sm font-semibold text-foreground sm:text-base">{title}</h3>
+        <p className="text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
       </div>
       {empty ? (
-        <div className="flex flex-1 items-center justify-center py-16 text-sm text-muted-foreground">
+        <div className="flex flex-1 items-center justify-center py-12 text-sm text-muted-foreground sm:py-16">
           No data yet
         </div>
       ) : (
-        <div className="flex-1 px-3 py-4">{children}</div>
+        <div className="min-w-0 flex-1 overflow-x-auto px-2 py-3 sm:px-3 sm:py-4">{children}</div>
       )}
     </div>
   );
@@ -89,42 +89,44 @@ export function CategoryPieChart({ data }: { data: CategoryData[] }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.2 }}
-      className="h-full"
+      className="h-full w-full min-w-0"
     >
-      <ChartBox
-        title="By Category"
-        subtitle="This month's split"
-        empty={!data.length}
-      >
+      <ChartBox title="By Category" subtitle="This month's split" empty={!data.length}>
         {data.length > 0 && (
-          <div className="relative">
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={90}
-                  paddingAngle={3}
-                  dataKey="value"
-                  nameKey="name"
-                  strokeWidth={0}
-                >
-                  {data.map((entry, i) => (
-                    <Cell
-                      key={entry.name}
-                      fill={entry.color || CHART_COLORS[i % CHART_COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-                <Legend iconType="circle" iconSize={8} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="pointer-events-none absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 text-center">
-              <p className="text-[10px] text-muted-foreground">Total</p>
-              <p className="text-sm font-bold text-foreground">{formatCurrency(total)}</p>
+          <div className="relative mx-auto w-full min-w-[260px] max-w-lg">
+            <div className="chart-wrap">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={data}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius="55%"
+                    outerRadius="85%"
+                    paddingAngle={3}
+                    dataKey="value"
+                    nameKey="name"
+                    strokeWidth={0}
+                  >
+                    {data.map((entry, i) => (
+                      <Cell
+                        key={entry.name}
+                        fill={entry.color || CHART_COLORS[i % CHART_COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <Legend
+                    iconType="circle"
+                    iconSize={8}
+                    wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="pointer-events-none absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 text-center sm:top-[40%]">
+              <p className="text-[10px] text-muted-foreground sm:text-xs">Total</p>
+              <p className="text-xs font-bold text-foreground sm:text-sm">{formatCurrency(total)}</p>
             </div>
           </div>
         )}
@@ -139,30 +141,34 @@ export function MonthlyBarChart({ data }: { data: MonthlyData[] }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.15 }}
-      className="h-full"
+      className="h-full w-full min-w-0"
     >
       <ChartBox title="Monthly Trend" subtitle="Last 12 months">
-        <ResponsiveContainer width="100%" height={280}>
-          <BarChart data={data} barCategoryGap="25%">
-            <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border/40" />
-            <XAxis
-              dataKey="month"
-              tick={{ fontSize: 11 }}
-              axisLine={false}
-              tickLine={false}
-              className="text-muted-foreground"
-            />
-            <YAxis
-              tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
-              tick={{ fontSize: 11 }}
-              axisLine={false}
-              tickLine={false}
-              className="text-muted-foreground"
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="amount" fill="#818cf8" radius={[6, 6, 0, 0]} maxBarSize={40} />
-          </BarChart>
-        </ResponsiveContainer>
+        <div className="chart-wrap min-w-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} barCategoryGap="20%">
+              <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border/40" />
+              <XAxis
+                dataKey="month"
+                tick={{ fontSize: 10 }}
+                axisLine={false}
+                tickLine={false}
+                interval="preserveStartEnd"
+                className="text-muted-foreground"
+              />
+              <YAxis
+                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                tick={{ fontSize: 10 }}
+                axisLine={false}
+                tickLine={false}
+                width={36}
+                className="text-muted-foreground"
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="amount" fill="#818cf8" radius={[6, 6, 0, 0]} maxBarSize={36} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </ChartBox>
     </motion.div>
   );
@@ -174,39 +180,43 @@ export function ExpenseTrendChart({ data }: { data: TrendData[] }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.25 }}
-      className="h-full"
+      className="h-full w-full min-w-0"
     >
       <ChartBox title="Expense Trend" subtitle="Last 30 days" empty={!data.length}>
         {data.length > 0 && (
-          <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border/40" />
-              <XAxis
-                dataKey="date"
-                tickFormatter={(d) => d.slice(5)}
-                tick={{ fontSize: 11 }}
-                axisLine={false}
-                tickLine={false}
-                className="text-muted-foreground"
-              />
-              <YAxis
-                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
-                tick={{ fontSize: 11 }}
-                axisLine={false}
-                tickLine={false}
-                className="text-muted-foreground"
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Line
-                type="monotone"
-                dataKey="amount"
-                stroke="#818cf8"
-                strokeWidth={2.5}
-                dot={false}
-                activeDot={{ r: 4, fill: "#6366f1" }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <div className="chart-wrap min-w-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border/40" />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(d) => d.slice(5)}
+                  tick={{ fontSize: 10 }}
+                  axisLine={false}
+                  tickLine={false}
+                  interval="preserveStartEnd"
+                  className="text-muted-foreground"
+                />
+                <YAxis
+                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                  tick={{ fontSize: 10 }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={36}
+                  className="text-muted-foreground"
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                  type="monotone"
+                  dataKey="amount"
+                  stroke="#818cf8"
+                  strokeWidth={2.5}
+                  dot={false}
+                  activeDot={{ r: 4, fill: "#6366f1" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         )}
       </ChartBox>
     </motion.div>
