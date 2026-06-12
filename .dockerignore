@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+.env*
+railway-variables.json
+django-backend
+venv
+*.md

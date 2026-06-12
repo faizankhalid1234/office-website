@@ -1,14 +1,14 @@
-# Railway reads this file automatically — do NOT set "npm run dev" in the dashboard.
+# Railway config — uses Dockerfile (production), NOT next dev
 
 [build]
-builder = "nixpacks"
-buildCommand = "npm run build"
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "npm run railway:start"
 restartPolicyType = "on_failure"
 healthcheckPath = "/auth/login"
 healthcheckTimeout = 300
 
 [env]
 NODE_ENV = "production"
+AUTH_TRUST_HOST = "true"

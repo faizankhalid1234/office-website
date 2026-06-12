@@ -1,7 +1,9 @@
+import "@/lib/auth-env";
 import type { NextAuthConfig } from "next-auth";
 
 export const authConfig: NextAuthConfig = {
   trustHost: true,
+  secret: process.env.AUTH_SECRET,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/login",
@@ -38,7 +40,7 @@ export const authConfig: NextAuthConfig = {
       return true;
     },
     async jwt({ token, user }) {
-      if (user) {
+      if (user?.id) {
         token.id = user.id;
         token.role = user.role;
       }

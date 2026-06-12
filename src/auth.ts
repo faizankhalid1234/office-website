@@ -1,3 +1,4 @@
+import "@/lib/auth-env";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "@/auth.config";
@@ -7,6 +8,7 @@ import { loginSchema } from "@/lib/validations";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   trustHost: true,
+  secret: process.env.AUTH_SECRET,
   providers: [
     Credentials({
       name: "credentials",
