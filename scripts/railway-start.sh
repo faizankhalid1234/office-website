@@ -8,7 +8,7 @@ export PORT="${PORT:-3000}"
 
 echo "[start] DATABASE_URL set: ${DATABASE_URL:+yes}"
 echo "[start] Running prisma db push..."
-npx prisma db push --skip-generate --accept-data-loss
+npx prisma db push --accept-data-loss
 
 echo "[start] Seeding database (non-fatal)..."
 npx tsx prisma/seed.ts || echo "[start] Seed skipped"
