@@ -1,3 +1,5 @@
+import type { CurrencyCode } from "@/lib/currency";
+
 export type QuickExpenseType = "fuel" | "tea" | "lunch";
 
 export const QUICK_EXPENSE_TYPES = [
@@ -48,20 +50,31 @@ export const LUNCH_ITEMS = [
   "Other",
 ] as const;
 
-export function buildFuelTitle(liters: string, total: string) {
+export function buildFuelTitle(
+  liters: string,
+  total: string,
+  currency: CurrencyCode = "PKR"
+) {
   const l = parseFloat(liters);
   const t = parseFloat(total);
-  if (l > 0 && t > 0) return `Petrol - ${l} liters (Rs. ${t})`;
+  const label = currency === "CLP" ? "CLP" : "Rs.";
+  if (l > 0 && t > 0) return `Petrol - ${l} liters (${label} ${t})`;
   if (l > 0) return `Petrol - ${l} liters`;
   return "Petrol / Fuel";
 }
 
-export function buildFuelDescription(liters: string, ratePerLiter: string, note: string) {
+export function buildFuelDescription(
+  liters: string,
+  ratePerLiter: string,
+  note: string,
+  currency: CurrencyCode = "PKR"
+) {
   const parts: string[] = [];
   const l = parseFloat(liters);
   const r = parseFloat(ratePerLiter);
+  const label = currency === "CLP" ? "CLP" : "Rs.";
   if (l > 0) parts.push(`Fuel: ${l} liters`);
-  if (r > 0) parts.push(`Rate: Rs. ${r}/liter`);
+  if (r > 0) parts.push(`Rate: ${label} ${r}/liter`);
   if (note.trim()) parts.push(note.trim());
   return parts.join(" | ");
 }

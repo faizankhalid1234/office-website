@@ -35,6 +35,7 @@ export default async function EditExpensePage({ params }: Params) {
           paymentMethod: expense.paymentMethod,
           description: expense.description,
           categoryId: expense.categoryId,
+          currency: expense.currency,
           receiptUrl: expense.receiptUrl,
           receiptName: expense.receiptName,
         }}

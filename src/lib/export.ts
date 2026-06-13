@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { COMPANY_NAME } from "@/lib/constants";
-import { formatCurrency, formatDate } from "@/lib/utils-format";
+import { formatDualCurrency, formatDate } from "@/lib/utils-format";
 
 interface ReportExpense {
   title: string;
@@ -38,21 +38,21 @@ export function exportToPDF(report: ReportData) {
   doc.text(`Monthly Expense Report - ${monthName} ${report.year}`, 14, 30);
 
   doc.setFontSize(11);
-  doc.text(`Total Expenses: ${formatCurrency(report.total)}`, 14, 42);
-  doc.text(`Previous Month: ${formatCurrency(report.prevMonthTotal)}`, 14, 50);
+  doc.text(`Total Expenses: ${formatDualCurrency(report.total, "PKR")}`, 14, 42);
+  doc.text(`Previous Month: ${formatDualCurrency(report.prevMonthTotal, "PKR")}`, 14, 50);
   doc.text(
     `Change: ${report.comparison >= 0 ? "+" : ""}${report.comparison.toFixed(1)}%`,
     14,
     58
   );
   if (report.highest) {
-    doc.text(`Highest Category: ${report.highest.name} (${formatCurrency(report.highest.total)})`, 14, 66);
+    doc.text(`Highest Category: ${report.highest.name} (${formatDualCurrency(report.highest.total, "PKR")})`, 14, 66);
   }
 
   autoTable(doc, {
     startY: 75,
     head: [["Category", "Amount"]],
-    body: report.breakdown.map((b) => [b.name, formatCurrency(b.total)]),
+    body: report.breakdown.map((b) => [b.name, formatDualCurrency(b.total, "PKR")]),
   });
 
   const finalY = (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
@@ -65,7 +65,7 @@ export function exportToPDF(report: ReportData) {
       e.title,
       e.category.name,
       e.paymentMethod,
-      formatCurrency(e.amount),
+      formatDualCurrency(e.amount, (e as { currency?: "PKR" | "CLP" }).currency ?? "PKR"),
     ]),
   });
 

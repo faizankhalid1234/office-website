@@ -25,7 +25,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BudgetProgress } from "@/components/dashboard/budget-progress";
-import { formatCurrency } from "@/lib/utils-format";
+import { CurrencyAmount } from "@/components/currency/currency-amount";
+import { CurrencySelect } from "@/components/currency/currency-select";
+import { useInputCurrency } from "@/components/currency/currency-provider";
 
 interface BudgetData {
   month: number;
@@ -41,6 +43,7 @@ interface BudgetHistory {
   month: number;
   year: number;
   amount: number;
+  currency?: "PKR" | "CLP";
 }
 
 const MONTHS = [
@@ -56,11 +59,13 @@ export function BudgetManager({
   history: BudgetHistory[];
 }) {
   const router = useRouter();
+  const { inputCurrency, setInputCurrency } = useInputCurrency();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     month: current.month,
     year: current.year,
     amount: current.amount > 0 ? current.amount.toString() : "",
+    currency: inputCurrency,
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -75,6 +80,7 @@ export function BudgetManager({
           month: form.month,
           year: form.year,
           amount: parseFloat(form.amount),
+          currency: form.currency,
         }),
       });
 
@@ -147,7 +153,19 @@ export function BudgetManager({
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Budget Amount (PKR)</Label>
+                  <Label>Currency</Label>
+                  <CurrencySelect
+                    value={form.currency}
+                    onChange={(c) => {
+                      setForm({ ...form, currency: c });
+                      setInputCurrency(c);
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>
+                    Budget Amount ({form.currency === "CLP" ? "CLP" : "PKR"})
+                  </Label>
                   <Input
                     type="number"
                     min="1"
@@ -192,8 +210,12 @@ export function BudgetManager({
                     <TableCell>
                       {MONTHS[b.month - 1]} {b.year}
                     </TableCell>
-                    <TableCell className="text-right font-semibold">
-                      {formatCurrency(b.amount)}
+                    <TableCell className="text-right">
+                      <CurrencyAmount
+                        amount={b.amount}
+                        currency={b.currency ?? "PKR"}
+                        size="sm"
+                      />
                     </TableCell>
                   </TableRow>
                 ))

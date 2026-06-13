@@ -57,6 +57,7 @@ export async function POST(req: Request) {
       data: {
         title: parsed.data.title,
         amount: parsed.data.amount,
+        currency: parsed.data.currency,
         date: new Date(parsed.data.date),
         paymentMethod: parsed.data.paymentMethod,
         description: parsed.data.description,

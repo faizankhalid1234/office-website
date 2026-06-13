@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { budgetSchema } from "@/lib/validations";
-import { decimalToNumber } from "@/lib/utils-format";
+import { decimalToNumber, expenseAmountInPKR } from "@/lib/utils-format";
 import { startOfMonth, endOfMonth } from "date-fns";
 
 export async function GET() {
@@ -22,19 +22,26 @@ export async function GET() {
   const start = startOfMonth(now);
   const end = endOfMonth(now);
 
-  const spent = await prisma.expense.aggregate({
+  const monthExpenses = await prisma.expense.findMany({
     where: { userId: session.user.id, date: { gte: start, lte: end } },
-    _sum: { amount: true },
+    select: { amount: true, currency: true },
   });
 
+  const budgetAmount = budget
+    ? expenseAmountInPKR(decimalToNumber(budget.amount), budget.currency)
+    : 0;
+  const used = monthExpenses.reduce(
+    (sum, e) => sum + expenseAmountInPKR(decimalToNumber(e.amount), e.currency),
+    0
+  );
+
   const amount = budget ? decimalToNumber(budget.amount) : 0;
-  const used = decimalToNumber(spent._sum.amount ?? 0);
 
   return NextResponse.json({
     budget: budget ? { ...budget, amount } : null,
     used,
-    remaining: Math.max(0, amount - used),
-    percentage: amount > 0 ? (used / amount) * 100 : 0,
+    remaining: Math.max(0, budgetAmount - used),
+    percentage: budgetAmount > 0 ? (used / budgetAmount) * 100 : 0,
     month,
     year,
   });
@@ -61,11 +68,12 @@ export async function POST(req: Request) {
       where: {
         month_year: { month: parsed.data.month, year: parsed.data.year },
       },
-      update: { amount: parsed.data.amount },
+      update: { amount: parsed.data.amount, currency: parsed.data.currency },
       create: {
         month: parsed.data.month,
         year: parsed.data.year,
         amount: parsed.data.amount,
+        currency: parsed.data.currency,
       },
     });
 

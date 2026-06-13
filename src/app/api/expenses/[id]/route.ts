@@ -58,6 +58,7 @@ export async function PUT(req: Request, { params }: Params) {
       data: {
         title: parsed.data.title,
         amount: parsed.data.amount,
+        currency: parsed.data.currency,
         date: new Date(parsed.data.date),
         paymentMethod: parsed.data.paymentMethod,
         description: parsed.data.description,

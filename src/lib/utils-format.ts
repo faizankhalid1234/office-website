@@ -1,12 +1,22 @@
 import { format, startOfDay, startOfWeek, startOfMonth, startOfYear, subMonths } from "date-fns";
+import {
+  formatMoney,
+  formatDualMoney,
+  type CurrencyCode,
+  toPKR,
+  isCurrencyCode,
+} from "@/lib/currency";
 
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-PK", {
-    style: "currency",
-    currency: "PKR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+export function formatCurrency(amount: number, currency: CurrencyCode = "PKR"): string {
+  return formatMoney(amount, currency);
+}
+
+export function formatDualCurrency(amount: number, sourceCurrency: CurrencyCode = "PKR"): string {
+  return formatDualMoney(amount, sourceCurrency);
+}
+
+export function expenseAmountInPKR(amount: number, currency: string): number {
+  return toPKR(amount, isCurrencyCode(currency) ? currency : "PKR");
 }
 
 export function formatDate(date: Date | string): string {

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { decimalToNumber, getDateRanges } from "@/lib/utils-format";
+import { decimalToNumber, expenseAmountInPKR } from "@/lib/utils-format";
 import {
   startOfMonth,
   endOfMonth,
@@ -9,53 +9,63 @@ import {
   subYears,
 } from "date-fns";
 import type { Prisma } from "@/generated/prisma/client";
+import { getDateRanges } from "@/lib/utils-format";
 
 function withUser(userId: string, where: Prisma.ExpenseWhereInput = {}) {
   return { ...where, userId };
 }
 
+function sumExpensesInPKR(
+  expenses: Array<{ amount: unknown; currency: string }>
+): number {
+  return expenses.reduce(
+    (sum, e) =>
+      sum +
+      expenseAmountInPKR(
+        decimalToNumber(e.amount as { toNumber?: () => number } | number),
+        e.currency
+      ),
+    0
+  );
+}
+
+async function aggregateSumPKR(userId: string, where: Prisma.ExpenseWhereInput = {}) {
+  const expenses = await prisma.expense.findMany({
+    where: withUser(userId, where),
+    select: { amount: true, currency: true },
+  });
+  return sumExpensesInPKR(expenses);
+}
+
 export async function getExpenseStats(userId: string) {
   const ranges = getDateRanges();
 
-  const [today, week, month, year, recentExpenses, categoryBreakdown, monthlyData, budget, lastMonthTotal, monthCount] =
+  const [todaySum, weekSum, monthSum, yearSum, recentExpenses, monthExpenses, monthlyData, budget, lastMonthExpenses, monthCount] =
     await Promise.all([
-      prisma.expense.aggregate({
-        where: withUser(userId, { date: { gte: ranges.today } }),
-        _sum: { amount: true },
-      }),
-      prisma.expense.aggregate({
-        where: withUser(userId, { date: { gte: ranges.week } }),
-        _sum: { amount: true },
-      }),
-      prisma.expense.aggregate({
-        where: withUser(userId, { date: { gte: ranges.month } }),
-        _sum: { amount: true },
-      }),
-      prisma.expense.aggregate({
-        where: withUser(userId, { date: { gte: ranges.year } }),
-        _sum: { amount: true },
-      }),
+      aggregateSumPKR(userId, { date: { gte: ranges.today } }),
+      aggregateSumPKR(userId, { date: { gte: ranges.week } }),
+      aggregateSumPKR(userId, { date: { gte: ranges.month } }),
+      aggregateSumPKR(userId, { date: { gte: ranges.year } }),
       prisma.expense.findMany({
         where: { userId },
         take: 8,
         orderBy: { date: "desc" },
         include: { category: true, user: { select: { name: true } } },
       }),
-      prisma.expense.groupBy({
-        by: ["categoryId"],
+      prisma.expense.findMany({
         where: withUser(userId, { date: { gte: ranges.month } }),
-        _sum: { amount: true },
+        select: { categoryId: true, amount: true, currency: true },
       }),
       getMonthlyExpenseData(userId),
       getCurrentBudget(),
-      prisma.expense.aggregate({
+      prisma.expense.findMany({
         where: withUser(userId, {
           date: {
             gte: ranges.lastMonth,
             lt: ranges.lastMonthEnd,
           },
         }),
-        _sum: { amount: true },
+        select: { amount: true, currency: true },
       }),
       prisma.expense.count({
         where: withUser(userId, { date: { gte: ranges.month } }),
@@ -65,27 +75,38 @@ export async function getExpenseStats(userId: string) {
   const categories = await prisma.category.findMany();
   const categoryMap = new Map(categories.map((c) => [c.id, c]));
 
-  const categoryData = categoryBreakdown
-    .map((item) => {
-      const cat = categoryMap.get(item.categoryId);
+  const categoryTotals = new Map<string, number>();
+  for (const item of monthExpenses) {
+    const pkr = expenseAmountInPKR(decimalToNumber(item.amount), item.currency);
+    categoryTotals.set(
+      item.categoryId,
+      (categoryTotals.get(item.categoryId) ?? 0) + pkr
+    );
+  }
+
+  const categoryData = Array.from(categoryTotals.entries())
+    .map(([categoryId, value]) => {
+      const cat = categoryMap.get(categoryId);
       return {
         name: cat?.name ?? "Unknown",
-        value: decimalToNumber(item._sum.amount ?? 0),
+        value,
         color: cat?.color ?? "#6366f1",
       };
     })
     .sort((a, b) => b.value - a.value);
 
-  const monthTotal = decimalToNumber(month._sum.amount ?? 0);
-  const budgetAmount = budget ? decimalToNumber(budget.amount) : 0;
+  const monthTotal = monthSum;
+  const budgetAmount = budget
+    ? expenseAmountInPKR(decimalToNumber(budget.amount), budget.currency)
+    : 0;
   const budgetUsed = budgetAmount > 0 ? (monthTotal / budgetAmount) * 100 : 0;
 
   return {
     totals: {
-      today: decimalToNumber(today._sum.amount ?? 0),
-      week: decimalToNumber(week._sum.amount ?? 0),
+      today: todaySum,
+      week: weekSum,
       month: monthTotal,
-      year: decimalToNumber(year._sum.amount ?? 0),
+      year: yearSum,
     },
     recentExpenses: recentExpenses.map((e) => ({
       ...e,
@@ -101,7 +122,7 @@ export async function getExpenseStats(userId: string) {
           percentage: budgetUsed,
         }
       : null,
-    lastMonthTotal: decimalToNumber(lastMonthTotal._sum.amount ?? 0),
+    lastMonthTotal: sumExpensesInPKR(lastMonthExpenses),
     monthCount,
     highestCategory: categoryData[0] ?? null,
   };
@@ -112,16 +133,17 @@ async function getMonthlyExpenseData(userId: string) {
   const start = subYears(end, 1);
   const months = eachMonthOfInterval({ start, end });
 
-  const expenses = await prisma.expense.groupBy({
-    by: ["date"],
+  const expenses = await prisma.expense.findMany({
     where: withUser(userId, { date: { gte: start } }),
-    _sum: { amount: true },
+    select: { date: true, amount: true, currency: true },
+    orderBy: { date: "asc" },
   });
 
   const monthTotals = new Map<string, number>();
   for (const exp of expenses) {
     const key = format(exp.date, "MMM yyyy");
-    monthTotals.set(key, (monthTotals.get(key) ?? 0) + decimalToNumber(exp._sum.amount ?? 0));
+    const pkr = expenseAmountInPKR(decimalToNumber(exp.amount), exp.currency);
+    monthTotals.set(key, (monthTotals.get(key) ?? 0) + pkr);
   }
 
   return months.map((m) => ({
@@ -145,15 +167,15 @@ export async function getMonthlyReport(userId: string, month: number, year: numb
   const prevStart = startOfMonth(subMonths(start, 1));
   const prevEnd = endOfMonth(prevStart);
 
-  const [expenses, prevTotal, categories] = await Promise.all([
+  const [expenses, prevExpenses, categories] = await Promise.all([
     prisma.expense.findMany({
       where: withUser(userId, { date: { gte: start, lte: end } }),
       include: { category: true },
       orderBy: { date: "desc" },
     }),
-    prisma.expense.aggregate({
+    prisma.expense.findMany({
       where: withUser(userId, { date: { gte: prevStart, lte: prevEnd } }),
-      _sum: { amount: true },
+      select: { amount: true, currency: true },
     }),
     prisma.category.findMany(),
   ]);
@@ -162,7 +184,7 @@ export async function getMonthlyReport(userId: string, month: number, year: numb
   let total = 0;
 
   for (const exp of expenses) {
-    const amount = decimalToNumber(exp.amount);
+    const amount = expenseAmountInPKR(decimalToNumber(exp.amount), exp.currency);
     total += amount;
     const existing = categoryTotals.get(exp.categoryId) ?? {
       name: exp.category.name,
@@ -175,7 +197,7 @@ export async function getMonthlyReport(userId: string, month: number, year: numb
 
   const breakdown = Array.from(categoryTotals.values()).sort((a, b) => b.total - a.total);
   const highest = breakdown[0] ?? null;
-  const prevMonthTotal = decimalToNumber(prevTotal._sum.amount ?? 0);
+  const prevMonthTotal = sumExpensesInPKR(prevExpenses);
   const comparison =
     prevMonthTotal > 0 ? ((total - prevMonthTotal) / prevMonthTotal) * 100 : total > 0 ? 100 : 0;
 
@@ -198,14 +220,15 @@ export async function getTrendData(userId: string) {
 
   const expenses = await prisma.expense.findMany({
     where: withUser(userId, { date: { gte: start } }),
-    select: { date: true, amount: true },
+    select: { date: true, amount: true, currency: true },
     orderBy: { date: "asc" },
   });
 
   const dailyMap = new Map<string, number>();
   for (const exp of expenses) {
     const key = format(exp.date, "yyyy-MM-dd");
-    dailyMap.set(key, (dailyMap.get(key) ?? 0) + decimalToNumber(exp.amount));
+    const pkr = expenseAmountInPKR(decimalToNumber(exp.amount), exp.currency);
+    dailyMap.set(key, (dailyMap.get(key) ?? 0) + pkr);
   }
 
   return Array.from(dailyMap.entries())

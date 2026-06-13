@@ -23,6 +23,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { PAYMENT_METHODS } from "@/lib/constants";
+import { CurrencySelect } from "@/components/currency/currency-select";
+import { CurrencyAmount } from "@/components/currency/currency-amount";
+import { useInputCurrency } from "@/components/currency/currency-provider";
+import {
+  petrolRateForCurrency,
+  type CurrencyCode,
+} from "@/lib/currency";
 import {
   QUICK_EXPENSE_TYPES,
   TEA_ITEMS,
@@ -36,7 +43,6 @@ import {
 } from "@/lib/quick-expense";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { formatCurrency } from "@/lib/utils-format";
 
 interface Category {
   id: string;
@@ -57,6 +63,7 @@ interface QuickExpenseProps {
 
 export function QuickExpense({ categories, compact = false }: QuickExpenseProps) {
   const router = useRouter();
+  const { inputCurrency, setInputCurrency } = useInputCurrency();
   const [activeType, setActiveType] = useState<QuickExpenseType | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -67,6 +74,7 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
     note: "",
     paymentMethod: "CASH",
     date: format(new Date(), "yyyy-MM-dd"),
+    currency: inputCurrency,
   });
 
   const [tea, setTea] = useState({
@@ -75,6 +83,7 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
     note: "",
     paymentMethod: "CASH",
     date: format(new Date(), "yyyy-MM-dd"),
+    currency: inputCurrency,
   });
 
   const [lunch, setLunch] = useState({
@@ -84,6 +93,7 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
     note: "",
     paymentMethod: "CASH",
     date: format(new Date(), "yyyy-MM-dd"),
+    currency: inputCurrency,
   });
 
   function getCategoryId(name: string) {
@@ -93,6 +103,7 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
   async function submitExpense(data: {
     title: string;
     amount: number;
+    currency: CurrencyCode;
     categoryId: string;
     description?: string;
     paymentMethod: string;
@@ -121,9 +132,49 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
 
   function resetForms() {
     const today = format(new Date(), "yyyy-MM-dd");
-    setFuel({ liters: "", ratePerLiter: "", totalAmount: "", note: "", paymentMethod: "CASH", date: today });
-    setTea({ item: TEA_ITEMS[0], amount: "", note: "", paymentMethod: "CASH", date: today });
-    setLunch({ item: LUNCH_ITEMS[0], amount: "", people: "", note: "", paymentMethod: "CASH", date: today });
+    const rate = String(petrolRateForCurrency(inputCurrency));
+    setFuel({
+      liters: "",
+      ratePerLiter: rate,
+      totalAmount: "",
+      note: "",
+      paymentMethod: "CASH",
+      date: today,
+      currency: inputCurrency,
+    });
+    setTea({
+      item: TEA_ITEMS[0],
+      amount: "",
+      note: "",
+      paymentMethod: "CASH",
+      date: today,
+      currency: inputCurrency,
+    });
+    setLunch({
+      item: LUNCH_ITEMS[0],
+      amount: "",
+      people: "",
+      note: "",
+      paymentMethod: "CASH",
+      date: today,
+      currency: inputCurrency,
+    });
+  }
+
+  function openQuickType(type: QuickExpenseType) {
+    if (type === "fuel") {
+      const rate = String(petrolRateForCurrency(inputCurrency));
+      setFuel((prev) => ({
+        ...prev,
+        currency: inputCurrency,
+        ratePerLiter: prev.ratePerLiter || rate,
+      }));
+    } else if (type === "tea") {
+      setTea((prev) => ({ ...prev, currency: inputCurrency }));
+    } else {
+      setLunch((prev) => ({ ...prev, currency: inputCurrency }));
+    }
+    setActiveType(type);
   }
 
   async function handleFuelSubmit(e: React.FormEvent) {
@@ -134,10 +185,16 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
     if (!amount || amount <= 0) return toast.error("Total amount is required");
 
     await submitExpense({
-      title: buildFuelTitle(fuel.liters, fuel.totalAmount),
+      title: buildFuelTitle(fuel.liters, fuel.totalAmount, fuel.currency),
       amount,
+      currency: fuel.currency,
       categoryId,
-      description: buildFuelDescription(fuel.liters, fuel.ratePerLiter, fuel.note),
+      description: buildFuelDescription(
+        fuel.liters,
+        fuel.ratePerLiter,
+        fuel.note,
+        fuel.currency
+      ),
       paymentMethod: fuel.paymentMethod,
       date: fuel.date,
     });
@@ -153,6 +210,7 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
     await submitExpense({
       title: buildTeaTitle(tea.item),
       amount,
+      currency: tea.currency,
       categoryId,
       description: tea.note || `${tea.item} - office tea/snacks`,
       paymentMethod: tea.paymentMethod,
@@ -178,6 +236,7 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
     await submitExpense({
       title: buildLunchTitle(lunch.item, lunch.people),
       amount,
+      currency: lunch.currency,
       categoryId,
       description: desc,
       paymentMethod: lunch.paymentMethod,
@@ -220,7 +279,7 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ delay: i * 0.06 }}
-                onClick={() => setActiveType(type.id)}
+                onClick={() => openQuickType(type.id)}
                 className="flex min-h-[88px] flex-col items-center justify-center gap-2 rounded-2xl border border-border/40 bg-muted/20 p-3 text-center transition hover:border-indigo-300/50 hover:bg-indigo-50/50 sm:min-h-0 dark:hover:bg-indigo-500/10"
               >
                 <div
@@ -251,6 +310,24 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleFuelSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Currency</Label>
+              <CurrencySelect
+                value={fuel.currency}
+                onChange={(c) => {
+                  setInputCurrency(c);
+                  setFuel({
+                    ...fuel,
+                    currency: c,
+                    ratePerLiter: String(petrolRateForCurrency(c)),
+                  });
+                }}
+              />
+              <p className="text-[10px] text-muted-foreground">
+                Chile petrol: 1,596 CLP/L · 1 CLP = 0.31 PKR
+              </p>
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Liters</Label>
@@ -264,12 +341,16 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
                 />
               </div>
               <div className="space-y-2">
-                <Label>Rate / liter (Rs.)</Label>
+                <Label>
+                  Rate / liter ({fuel.currency === "CLP" ? "CLP" : "PKR"})
+                </Label>
                 <Input
                   type="number"
                   min="0"
                   step="0.01"
-                  placeholder="e.g. 280"
+                  placeholder={
+                    fuel.currency === "CLP" ? "e.g. 1596" : "e.g. 494"
+                  }
                   value={fuel.ratePerLiter}
                   onChange={(e) => setFuel({ ...fuel, ratePerLiter: e.target.value })}
                 />
@@ -277,14 +358,21 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
             </div>
 
             {fuelCalc > 0 && (
-              <div className="flex items-center gap-2 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-400">
-                <Calculator className="h-4 w-4" />
-                Auto total: <strong>{formatCurrency(fuelCalc)}</strong>
+              <div className="flex items-center gap-2 rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-700 dark:text-red-400">
+                <Calculator className="h-4 w-4 shrink-0" />
+                <span className="min-w-0 flex-1">
+                  Auto total:{" "}
+                  <CurrencyAmount
+                    amount={fuelCalc}
+                    currency={fuel.currency}
+                    size="sm"
+                  />
+                </span>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="ml-auto h-7 text-xs"
+                  className="ml-auto h-7 shrink-0 text-xs"
                   onClick={() => setFuel({ ...fuel, totalAmount: fuelCalc.toString() })}
                 >
                   Use this
@@ -293,7 +381,9 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
             )}
 
             <div className="space-y-2">
-              <Label>Total Amount (Rs.) *</Label>
+              <Label>
+                Total Amount ({fuel.currency === "CLP" ? "CLP" : "PKR"}) *
+              </Label>
               <Input
                 type="number"
                 min="1"
@@ -358,6 +448,17 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
           </DialogHeader>
           <form onSubmit={handleTeaSubmit} className="space-y-4">
             <div className="space-y-2">
+              <Label>Currency</Label>
+              <CurrencySelect
+                value={tea.currency}
+                onChange={(c) => {
+                  setInputCurrency(c);
+                  setTea({ ...tea, currency: c });
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label>What was purchased?</Label>
               <Select
                 value={tea.item}
@@ -373,7 +474,7 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
             </div>
 
             <div className="space-y-2">
-              <Label>Amount (Rs.) *</Label>
+              <Label>Amount ({tea.currency === "CLP" ? "CLP" : "PKR"}) *</Label>
               <Input
                 type="number"
                 min="1"
@@ -438,6 +539,17 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
           </DialogHeader>
           <form onSubmit={handleLunchSubmit} className="space-y-4">
             <div className="space-y-2">
+              <Label>Currency</Label>
+              <CurrencySelect
+                value={lunch.currency}
+                onChange={(c) => {
+                  setInputCurrency(c);
+                  setLunch({ ...lunch, currency: c });
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label>Meal type</Label>
               <Select
                 value={lunch.item}
@@ -464,7 +576,7 @@ export function QuickExpense({ categories, compact = false }: QuickExpenseProps)
                 />
               </div>
               <div className="space-y-2">
-                <Label>Amount (Rs.) *</Label>
+                <Label>Amount ({lunch.currency === "CLP" ? "CLP" : "PKR"}) *</Label>
                 <Input
                   type="number"
                   min="1"

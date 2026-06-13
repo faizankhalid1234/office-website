@@ -99,7 +99,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen min-h-[100dvh]">
       {/* Left — Brand panel */}
       <div className="relative hidden w-1/2 overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="absolute inset-0 mesh-bg opacity-30" />
@@ -135,7 +135,13 @@ export function AuthForm({ mode }: AuthFormProps) {
       </div>
 
       {/* Right — Form */}
-      <div className="mesh-bg flex flex-1 items-center justify-center p-6 md:p-12">
+      <div
+        className="mesh-bg flex flex-1 items-center justify-center px-4 py-8 sm:p-6 md:p-12"
+        style={{
+          paddingTop: "max(2rem, env(safe-area-inset-top))",
+          paddingBottom: "max(2rem, env(safe-area-inset-bottom))",
+        }}
+      >
         <div className="w-full max-w-md">
           <div className="mb-8 text-center lg:text-left">
             <div className="mb-4 flex justify-center lg:hidden">
@@ -169,7 +175,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="John Doe"
-                    className="h-10 rounded-xl border-border/60 bg-background/50 text-sm"
+                    className="h-10 rounded-xl border-border/60 bg-background/50 text-sm sm:h-10"
                     required
                   />
                 </div>

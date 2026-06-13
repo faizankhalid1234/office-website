@@ -17,6 +17,9 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { PAYMENT_METHODS } from "@/lib/constants";
+import { CurrencySelect } from "@/components/currency/currency-select";
+import { useInputCurrency } from "@/components/currency/currency-provider";
+import type { CurrencyCode } from "@/lib/currency";
 import { format } from "date-fns";
 
 interface Category {
@@ -35,6 +38,7 @@ interface ExpenseFormProps {
     paymentMethod: string;
     description?: string | null;
     categoryId: string;
+    currency?: CurrencyCode;
     receiptUrl?: string | null;
     receiptName?: string | null;
   };
@@ -42,6 +46,7 @@ interface ExpenseFormProps {
 
 export function ExpenseForm({ categories, initialData }: ExpenseFormProps) {
   const router = useRouter();
+  const { inputCurrency, setInputCurrency } = useInputCurrency();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [receipt, setReceipt] = useState<{ url: string; name: string } | null>(
@@ -59,7 +64,10 @@ export function ExpenseForm({ categories, initialData }: ExpenseFormProps) {
     paymentMethod: initialData?.paymentMethod ?? "CASH",
     description: initialData?.description ?? "",
     categoryId: initialData?.categoryId ?? "",
+    currency: (initialData?.currency ?? inputCurrency) as CurrencyCode,
   });
+
+  const activeCurrency = form.currency;
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -95,6 +103,7 @@ export function ExpenseForm({ categories, initialData }: ExpenseFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          currency: form.currency,
           receiptUrl: receipt?.url,
           receiptName: receipt?.name,
         }),
@@ -114,11 +123,22 @@ export function ExpenseForm({ categories, initialData }: ExpenseFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+    <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
       <Card className="border-border/50 bg-card/60 backdrop-blur-xl">
-        <CardContent className="p-6 space-y-5">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2 sm:col-span-2">
+        <CardContent className="space-y-5 p-4 sm:p-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Currency</Label>
+                <CurrencySelect
+                  value={form.currency}
+                  onChange={(c) => {
+                    setForm({ ...form, currency: c });
+                    setInputCurrency(c);
+                  }}
+                />
+              </div>
+
+              <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="title">Title</Label>
               <Input
                 id="title"
@@ -130,7 +150,9 @@ export function ExpenseForm({ categories, initialData }: ExpenseFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount (PKR)</Label>
+              <Label htmlFor="amount">
+                Amount ({activeCurrency === "CLP" ? "Chilean Peso" : "PKR"}) *
+              </Label>
               <Input
                 id="amount"
                 type="number"
@@ -256,11 +278,11 @@ export function ExpenseForm({ categories, initialData }: ExpenseFormProps) {
             </div>
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <Button type="submit" disabled={loading || !form.categoryId}>
+          <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:gap-3">
+            <Button type="submit" disabled={loading || !form.categoryId} className="min-h-11 w-full sm:w-auto">
               {loading ? "Saving..." : initialData ? "Update Expense" : "Add Expense"}
             </Button>
-            <Button type="button" variant="outline" onClick={() => router.back()}>
+            <Button type="button" variant="outline" onClick={() => router.back()} className="min-h-11 w-full sm:w-auto">
               Cancel
             </Button>
           </div>

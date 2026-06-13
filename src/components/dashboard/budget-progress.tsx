@@ -5,7 +5,8 @@ import Link from "next/link";
 import { AlertTriangle, Wallet } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { formatCurrency, getBudgetAlertLevel } from "@/lib/utils-format";
+import { getBudgetAlertLevel } from "@/lib/utils-format";
+import { CurrencyAmount } from "@/components/currency/currency-amount";
 import { cn } from "@/lib/utils";
 
 interface BudgetProgressProps {
@@ -56,18 +57,30 @@ export function BudgetProgress({ amount, used, remaining, percentage }: BudgetPr
         <div className="grid grid-cols-1 gap-2 text-center min-[400px]:grid-cols-3 sm:gap-3">
           <div className="rounded-2xl bg-muted/40 px-2 py-3">
             <p className="text-[10px] text-muted-foreground">Budget</p>
-            <p className="mt-0.5 text-sm font-bold text-foreground">{formatCurrency(amount)}</p>
+            <p className="mt-0.5">
+              <CurrencyAmount amount={amount} currency="PKR" size="sm" />
+            </p>
           </div>
           <div className="rounded-2xl bg-orange-50 px-2 py-3 dark:bg-orange-500/10">
             <p className="text-[10px] text-muted-foreground">Spent</p>
-            <p className="mt-0.5 text-sm font-bold text-orange-600 dark:text-orange-400">
-              {formatCurrency(used)}
+            <p className="mt-0.5">
+              <CurrencyAmount
+                amount={used}
+                currency="PKR"
+                size="sm"
+                primaryClassName="text-orange-600 dark:text-orange-400"
+              />
             </p>
           </div>
           <div className="rounded-2xl bg-emerald-50 px-2 py-3 dark:bg-emerald-500/10">
             <p className="text-[10px] text-muted-foreground">Left</p>
-            <p className="mt-0.5 text-sm font-bold text-emerald-600 dark:text-emerald-400">
-              {formatCurrency(remaining)}
+            <p className="mt-0.5">
+              <CurrencyAmount
+                amount={remaining}
+                currency="PKR"
+                size="sm"
+                primaryClassName="text-emerald-600 dark:text-emerald-400"
+              />
             </p>
           </div>
         </div>

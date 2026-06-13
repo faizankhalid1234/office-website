@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Moon, Sun, Monitor, User, Shield, ExternalLink, Users } from "lucide-react";
+import { Moon, Sun, Monitor, User, Shield, ExternalLink, Users, Wallet } from "lucide-react";
 import { CompanyLogo } from "@/components/brand/company-logo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,9 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { CurrencySelect } from "@/components/currency/currency-select";
+import { useInputCurrency } from "@/components/currency/currency-provider";
+import { CLP_TO_PKR, PETROL_PRICE_CLP_PER_LITER, PETROL_PRICE_PKR_PER_LITER } from "@/lib/currency";
 
 interface SettingsViewProps {
   user: { name: string; email: string; role: string };
@@ -18,6 +21,7 @@ interface SettingsViewProps {
 
 export function SettingsView({ user, companyName, djangoAdminUrl }: SettingsViewProps) {
   const { theme, setTheme } = useTheme();
+  const { inputCurrency, setInputCurrency } = useInputCurrency();
 
   return (
     <div className="grid gap-6 max-w-2xl">
@@ -89,6 +93,25 @@ export function SettingsView({ user, companyName, djangoAdminUrl }: SettingsView
           </CardContent>
         </Card>
       )}
+
+      <Card className="border-border/50 bg-card/60 backdrop-blur-xl">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Wallet className="h-4 w-4" />
+            Currency
+          </CardTitle>
+          <CardDescription>
+            Enter expenses in PKR or Chilean Peso (CLP). Both amounts show everywhere.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <CurrencySelect value={inputCurrency} onChange={setInputCurrency} />
+          <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
+            <p>1 CLP = {CLP_TO_PKR} PKR</p>
+            <p>Chile petrol: {PETROL_PRICE_CLP_PER_LITER} CLP/L (~{PETROL_PRICE_PKR_PER_LITER} PKR/L)</p>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="border-border/50 bg-card/60 backdrop-blur-xl">
         <CardHeader>

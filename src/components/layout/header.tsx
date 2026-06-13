@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { Moon, Sun, LogOut, Menu, User, Bell } from "lucide-react";
@@ -21,6 +22,7 @@ import { CompanyLogo } from "@/components/brand/company-logo";
 import { format } from "date-fns";
 
 export function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
   const today = format(new Date(), "EEEE, MMM d");
@@ -34,11 +36,14 @@ export function Header() {
     .slice(0, 2) ?? "U";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/40 bg-white/80 backdrop-blur-2xl dark:bg-background/80">
+    <header
+      className="sticky top-0 z-40 border-b border-border/40 bg-white/90 backdrop-blur-2xl dark:bg-background/90"
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
+    >
       <div className="safe-px flex h-14 min-h-[56px] items-center justify-between gap-2 sm:h-[64px] md:h-[68px] md:gap-4 lg:px-8">
         {/* Menu button — same sidebar, opens in drawer on small screens */}
-        <div className="flex min-w-0 flex-1 items-center gap-2 md:hidden">
-          <Sheet>
+        <div className="flex min-w-0 flex-1 items-center gap-2.5 md:hidden">
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger
               className="touch-target inline-flex shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400"
               aria-label="Open menu"
@@ -47,12 +52,20 @@ export function Header() {
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="w-[min(100vw-2rem,280px)] max-w-[85vw] border-0 bg-transparent p-0"
+              showCloseButton
+              className="w-[min(100vw-1rem,300px)] max-w-[88vw] border-0 bg-transparent p-0 [&_[data-slot=sheet-close]]:text-white [&_[data-slot=sheet-close]]:hover:bg-white/10"
             >
-              <SidebarContent />
+              <SidebarContent onNavigate={() => setMenuOpen(false)} />
             </SheetContent>
           </Sheet>
-          <CompanyLogo size="sm" showText subtitle={firstName ? `Hi, ${firstName}` : "Expense Manager"} />
+          <div className="min-w-0 flex-1">
+            <CompanyLogo
+              size="sm"
+              showText
+              subtitle={firstName ? `Hi, ${firstName}` : "Expense Manager"}
+              className="max-w-full"
+            />
+          </div>
         </div>
 
         <div className="hidden min-w-0 md:block">

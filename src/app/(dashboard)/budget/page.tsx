@@ -2,7 +2,7 @@ import { BudgetManager } from "@/components/budget/budget-manager";
 import { getCurrentBudget } from "@/lib/expense-service";
 import { requireUser } from "@/lib/require-user";
 import { prisma } from "@/lib/prisma";
-import { decimalToNumber } from "@/lib/utils-format";
+import { decimalToNumber, expenseAmountInPKR } from "@/lib/utils-format";
 import { startOfMonth, endOfMonth } from "date-fns";
 
 export default async function BudgetPage() {
@@ -12,13 +12,20 @@ export default async function BudgetPage() {
   const start = startOfMonth(now);
   const end = endOfMonth(now);
 
-  const spent = await prisma.expense.aggregate({
+  const monthExpenses = await prisma.expense.findMany({
     where: { userId: user.id, date: { gte: start, lte: end } },
-    _sum: { amount: true },
+    select: { amount: true, currency: true },
   });
 
+  const budgetAmountPKR = budget
+    ? expenseAmountInPKR(decimalToNumber(budget.amount), budget.currency)
+    : 0;
+  const used = monthExpenses.reduce(
+    (sum, e) => sum + expenseAmountInPKR(decimalToNumber(e.amount), e.currency),
+    0
+  );
+
   const amount = budget ? decimalToNumber(budget.amount) : 0;
-  const used = decimalToNumber(spent._sum.amount ?? 0);
 
   const allBudgets = await prisma.budget.findMany({
     orderBy: [{ year: "desc" }, { month: "desc" }],
@@ -39,12 +46,13 @@ export default async function BudgetPage() {
           year: now.getFullYear(),
           amount,
           used,
-          remaining: Math.max(0, amount - used),
-          percentage: amount > 0 ? (used / amount) * 100 : 0,
+          remaining: Math.max(0, budgetAmountPKR - used),
+          percentage: budgetAmountPKR > 0 ? (used / budgetAmountPKR) * 100 : 0,
         }}
         history={allBudgets.map((b) => ({
           ...b,
           amount: decimalToNumber(b.amount),
+          currency: b.currency,
         }))}
       />
     </div>

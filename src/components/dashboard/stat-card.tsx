@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Calendar, TrendingUp, Wallet, Receipt, LucideIcon } from "lucide-react";
-import { formatCurrency } from "@/lib/utils-format";
+import { CurrencyAmount } from "@/components/currency/currency-amount";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -53,7 +53,7 @@ export function StatCard({ title, value, icon, trend, index = 0 }: StatCardProps
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: index * 0.06 }}
       whileHover={{ y: -2 }}
-      className={cn("soft-card border p-5", style.accent, style.bg)}
+      className={cn("soft-card border p-4 sm:p-5", style.accent, style.bg)}
     >
       <div className="flex items-center justify-between">
         <div
@@ -70,10 +70,10 @@ export function StatCard({ title, value, icon, trend, index = 0 }: StatCardProps
           </span>
         )}
       </div>
-      <p className="mt-4 text-sm font-medium text-muted-foreground md:text-base">{title}</p>
-      <p className="mt-1 text-2xl font-bold tracking-tight text-foreground tabular-nums md:text-3xl">
-        {formatCurrency(value)}
-      </p>
+      <p className="mt-3 text-xs font-medium text-muted-foreground sm:text-sm">{title}</p>
+      <div className="mt-1">
+        <CurrencyAmount amount={value} currency="PKR" size="sm" />
+      </div>
     </motion.div>
   );
 }

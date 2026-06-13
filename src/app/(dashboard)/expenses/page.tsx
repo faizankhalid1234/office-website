@@ -18,17 +18,17 @@ export default async function ExpensesPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Expenses</h1>
-          <p className="text-muted-foreground text-sm mt-1">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Expenses</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage and track all office expenses
           </p>
         </div>
         <Link
           href="/expenses/add"
-          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/80"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 text-sm font-semibold text-white shadow-md shadow-indigo-500/25 transition hover:from-indigo-500 hover:to-violet-500 sm:w-auto sm:px-5"
         >
           <Plus className="h-4 w-4" />
           Add Expense
@@ -39,6 +39,7 @@ export default async function ExpensesPage() {
         expenses={expenses.map((e) => ({
           ...e,
           amount: decimalToNumber(e.amount),
+          currency: e.currency,
         }))}
         categories={categories}
       />

@@ -22,7 +22,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CategoryPieChart, ExpenseTrendChart } from "@/components/dashboard/charts";
-import { formatCurrency, formatDate } from "@/lib/utils-format";
+import { formatDualCurrency, formatDate } from "@/lib/utils-format";
+import { CurrencyAmount } from "@/components/currency/currency-amount";
+import type { CurrencyCode } from "@/lib/currency";
 import { exportToPDF, exportToExcel } from "@/lib/export";
 
 interface ReportData {
@@ -37,6 +39,7 @@ interface ReportData {
     id: string;
     title: string;
     amount: number;
+    currency?: CurrencyCode;
     date: Date | string;
     paymentMethod: string;
     category: { name: string };
@@ -155,7 +158,9 @@ export function ReportsView({
               <Card className="border-border/50 bg-card/60 backdrop-blur-xl">
                 <CardContent className="p-5">
                   <p className="text-sm text-muted-foreground">Total Expenses</p>
-                  <p className="text-2xl font-bold mt-1">{formatCurrency(report.total)}</p>
+                  <div className="mt-1">
+                    <CurrencyAmount amount={report.total} currency="PKR" />
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -175,7 +180,7 @@ export function ReportsView({
                     </p>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Prev: {formatCurrency(report.prevMonthTotal)}
+                    Prev: {formatDualCurrency(report.prevMonthTotal, "PKR")}
                   </p>
                 </CardContent>
               </Card>
@@ -190,7 +195,7 @@ export function ReportsView({
                   </div>
                   {report.highest && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      {formatCurrency(report.highest.total)}
+                      {formatDualCurrency(report.highest.total, "PKR")}
                     </p>
                   )}
                 </CardContent>
@@ -229,7 +234,9 @@ export function ReportsView({
                   {report.breakdown.map((b) => (
                     <TableRow key={b.name}>
                       <TableCell className="font-medium">{b.name}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(b.total)}</TableCell>
+                      <TableCell className="text-right">
+                        <CurrencyAmount amount={b.total} currency="PKR" size="sm" />
+                      </TableCell>
                       <TableCell className="text-right">
                         {report.total > 0
                           ? ((b.total / report.total) * 100).toFixed(1)
@@ -270,7 +277,11 @@ export function ReportsView({
                       </TableCell>
                       <TableCell>{e.paymentMethod}</TableCell>
                       <TableCell className="text-right font-semibold">
-                        {formatCurrency(e.amount)}
+                        <CurrencyAmount
+                          amount={e.amount}
+                          currency={e.currency ?? "PKR"}
+                          size="sm"
+                        />
                       </TableCell>
                     </TableRow>
                   ))}

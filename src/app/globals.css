@@ -126,6 +126,13 @@
   }
   html {
     @apply font-sans;
+    font-size: 14px;
+  }
+
+  @media (min-width: 768px) {
+    html {
+      font-size: 15px;
+    }
   }
   h1, h2, h3, h4 {
     font-family: var(--font-heading), var(--font-sans), sans-serif;
@@ -292,5 +299,15 @@
 
   .touch-target {
     @apply min-h-11 min-w-11;
+  }
+
+  .mobile-main-pb {
+    padding-bottom: max(5rem, calc(4.5rem + env(safe-area-inset-bottom)));
+  }
+
+  @media (min-width: 768px) {
+    .mobile-main-pb {
+      padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    }
   }
 }

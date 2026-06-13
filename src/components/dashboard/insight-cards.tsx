@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Award, ArrowUpRight, ArrowDownRight, Hash, Wallet } from "lucide-react";
-import { formatCurrency } from "@/lib/utils-format";
+import { formatDualCurrency } from "@/lib/utils-format";
 import { cn } from "@/lib/utils";
 
 interface InsightCardsProps {
@@ -34,7 +34,7 @@ export function InsightCards({
     {
       label: "Top Category",
       value: highestCategory?.name ?? "—",
-      sub: highestCategory ? formatCurrency(highestCategory.value) : null,
+      sub: highestCategory ? formatDualCurrency(highestCategory.value, "PKR") : null,
       icon: Award,
       iconBg: "bg-violet-100 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400",
       dot: highestCategory?.color,
@@ -49,7 +49,7 @@ export function InsightCards({
     },
     {
       label: "Budget Left",
-      value: budgetRemaining !== null ? formatCurrency(budgetRemaining) : "Not set",
+      value: budgetRemaining !== null ? formatDualCurrency(budgetRemaining, "PKR") : "Not set",
       icon: Wallet,
       iconBg: "bg-sky-100 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400",
     },

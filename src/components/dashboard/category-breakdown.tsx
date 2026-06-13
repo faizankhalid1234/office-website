@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { formatCurrency } from "@/lib/utils-format";
+import { CurrencyAmount } from "@/components/currency/currency-amount";
 
 interface CategoryItem {
   name: string;
@@ -44,9 +44,7 @@ export function CategoryBreakdown({ data, total }: { data: CategoryItem[]; total
                   <span className="truncate text-sm font-medium text-foreground">{cat.name}</span>
                 </div>
                 <div className="shrink-0 text-right">
-                  <span className="text-sm font-semibold text-foreground">
-                    {formatCurrency(cat.value)}
-                  </span>
+                  <CurrencyAmount amount={cat.value} currency="PKR" size="sm" />
                   <span className="ml-2 text-xs text-muted-foreground">{pct.toFixed(0)}%</span>
                 </div>
               </div>

@@ -16,7 +16,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { formatCurrency } from "@/lib/utils-format";
+import { formatDualCurrency } from "@/lib/utils-format";
 import { CHART_COLORS } from "@/lib/constants";
 
 interface CategoryData {
@@ -48,7 +48,7 @@ const CustomTooltip = ({
   return (
     <div className="rounded-xl border bg-card px-3 py-2 text-sm shadow-lg">
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="font-bold text-foreground">{formatCurrency(payload[0].value)}</p>
+      <p className="text-xs font-bold text-foreground">{formatDualCurrency(payload[0].value, "PKR")}</p>
     </div>
   );
 };
@@ -115,7 +115,7 @@ export function CategoryPieChart({ data }: { data: CategoryData[] }) {
                       />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <Tooltip formatter={(value) => formatDualCurrency(Number(value), "PKR")} />
                   <Legend
                     iconType="circle"
                     iconSize={8}
@@ -126,7 +126,9 @@ export function CategoryPieChart({ data }: { data: CategoryData[] }) {
             </div>
             <div className="pointer-events-none absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 text-center sm:top-[40%]">
               <p className="text-[10px] text-muted-foreground sm:text-xs">Total</p>
-              <p className="text-xs font-bold text-foreground sm:text-sm">{formatCurrency(total)}</p>
+              <p className="text-[10px] font-bold text-foreground sm:text-xs">
+                {formatDualCurrency(total, "PKR")}
+              </p>
             </div>
           </div>
         )}

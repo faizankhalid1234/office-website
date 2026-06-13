@@ -15,6 +15,7 @@ export const registerSchema = z.object({
 export const expenseSchema = z.object({
   title: z.string().min(1, "Title is required"),
   amount: z.coerce.number().positive("Amount must be positive"),
+  currency: z.enum(["PKR", "CLP"]).optional().default("PKR"),
   date: z.string().min(1, "Date is required"),
   paymentMethod: z.enum(["CASH", "BANK", "EASYPAISA", "JAZZCASH", "CARD"]),
   description: z.string().optional(),
@@ -31,6 +32,7 @@ export const budgetSchema = z.object({
   month: z.coerce.number().min(1).max(12),
   year: z.coerce.number().min(2020).max(2100),
   amount: z.coerce.number().positive("Budget must be positive"),
+  currency: z.enum(["PKR", "CLP"]).optional().default("PKR"),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

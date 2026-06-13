@@ -32,13 +32,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { formatCurrency, formatDate } from "@/lib/utils-format";
+import { formatDate } from "@/lib/utils-format";
+import { CurrencyAmount } from "@/components/currency/currency-amount";
+import type { CurrencyCode } from "@/lib/currency";
 import { PAYMENT_METHODS } from "@/lib/constants";
 
 interface Expense {
   id: string;
   title: string;
   amount: number;
+  currency: CurrencyCode;
   date: string | Date;
   paymentMethod: string;
   description?: string | null;
@@ -124,7 +127,7 @@ export function ExpensesList({
             </Select>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="hidden overflow-x-auto md:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -165,7 +168,11 @@ export function ExpensesList({
                       <TableCell className="text-sm">{formatDate(expense.date)}</TableCell>
                       <TableCell className="text-sm">{paymentLabel(expense.paymentMethod)}</TableCell>
                       <TableCell className="text-right font-semibold">
-                        {formatCurrency(expense.amount)}
+                        <CurrencyAmount
+                          amount={expense.amount}
+                          currency={expense.currency ?? "PKR"}
+                          size="sm"
+                        />
                       </TableCell>
                       <TableCell>
                         {expense.receiptUrl ? (
@@ -207,6 +214,88 @@ export function ExpensesList({
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile card list */}
+          <div className="space-y-3 md:hidden">
+            {filtered.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 py-12 text-center text-sm text-muted-foreground">
+                No expenses found
+              </div>
+            ) : (
+              filtered.map((expense) => (
+                <div
+                  key={expense.id}
+                  className="rounded-2xl border border-border/50 bg-card/80 p-4 shadow-sm transition-colors active:bg-muted/30"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-foreground leading-tight">{expense.title}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{expense.user.name}</p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <CurrencyAmount
+                        amount={expense.amount}
+                        currency={expense.currency ?? "PKR"}
+                        size="sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <Badge variant="secondary" className="gap-1 text-xs">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ backgroundColor: expense.category.color }}
+                      />
+                      {expense.category.name}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">{formatDate(expense.date)}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {paymentLabel(expense.paymentMethod)}
+                    </span>
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between gap-2 border-t border-border/40 pt-3">
+                    <div>
+                      {expense.receiptUrl ? (
+                        <a
+                          href={expense.receiptUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400"
+                        >
+                          {expense.receiptUrl.endsWith(".pdf") ? (
+                            <FileText className="h-3.5 w-3.5" />
+                          ) : (
+                            <ImageIcon className="h-3.5 w-3.5" />
+                          )}
+                          View receipt
+                        </a>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">No receipt</span>
+                      )}
+                    </div>
+                    <div className="flex gap-1">
+                      <Link
+                        href={`/expenses/${expense.id}/edit`}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 rounded-xl"
+                        onClick={() => setDeleteId(expense.id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

@@ -16,7 +16,7 @@ export function DashboardSubNav() {
     <aside className="relative z-20 w-full shrink-0 md:w-52 lg:w-60 xl:w-64">
       <nav
         className={cn(
-          "soft-card flex gap-2 overflow-x-auto p-2",
+          "soft-card flex gap-1.5 overflow-x-auto p-2",
           "snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           "md:sticky md:top-[68px] md:flex-col md:gap-0.5 md:overflow-visible md:p-3 lg:top-[72px]"
         )}
@@ -41,7 +41,7 @@ export function DashboardSubNav() {
               }}
               className={cn(
                 "flex shrink-0 snap-start cursor-pointer transition-all pointer-events-auto",
-                "min-h-[68px] min-w-[76px] flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2",
+                "min-h-[60px] min-w-[72px] flex-col items-center justify-center gap-1 rounded-xl px-2.5 py-2",
                 "md:min-h-0 md:min-w-0 md:w-full md:flex-row md:items-start md:gap-2.5 md:rounded-xl md:px-3 md:py-2.5 lg:gap-3 lg:py-3",
                 active
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"

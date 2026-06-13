@@ -3,13 +3,16 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Receipt } from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/utils-format";
+import { CurrencyAmount } from "@/components/currency/currency-amount";
+import { formatDate } from "@/lib/utils-format";
+import type { CurrencyCode } from "@/lib/currency";
 import { PAYMENT_METHODS } from "@/lib/constants";
 
 interface RecentExpense {
   id: string;
   title: string;
   amount: number;
+  currency?: CurrencyCode;
   date: Date | string;
   paymentMethod: string;
   category: { name: string; color: string };
@@ -68,9 +71,13 @@ export function RecentExpenses({ expenses }: { expenses: RecentExpense[] }) {
                   {formatDate(expense.date)}
                 </p>
               </div>
-              <p className="shrink-0 text-sm font-semibold text-foreground">
-                {formatCurrency(expense.amount)}
-              </p>
+              <div className="shrink-0 text-right">
+                <CurrencyAmount
+                  amount={expense.amount}
+                  currency={expense.currency ?? "PKR"}
+                  size="sm"
+                />
+              </div>
             </motion.div>
           ))}
         </div>
