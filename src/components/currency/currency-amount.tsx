@@ -27,14 +27,23 @@ export function CurrencyAmount({
   const clp = toCLP(amount, currency);
   const textSize = size === "sm" ? "text-xs" : "text-sm";
 
+  const primary =
+    currency === "CLP"
+      ? { value: clp, code: "CLP" as CurrencyCode }
+      : { value: pkr, code: "PKR" as CurrencyCode };
+  const secondary =
+    currency === "CLP"
+      ? { value: pkr, code: "PKR" as CurrencyCode }
+      : { value: clp, code: "CLP" as CurrencyCode };
+
   return (
     <span className={cn("tabular-nums leading-snug", className)}>
       <span className={cn(textSize, "font-semibold text-foreground", primaryClassName)}>
-        {formatMoney(pkr, "PKR")}
+        {formatMoney(primary.value, primary.code)}
       </span>
       <span className={cn(textSize, "text-muted-foreground", secondaryClassName)}>
         {" · "}
-        {formatMoney(clp, "CLP")}
+        {formatMoney(secondary.value, secondary.code)}
       </span>
     </span>
   );

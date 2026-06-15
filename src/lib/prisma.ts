@@ -7,11 +7,21 @@ const globalForPrisma = globalThis as unknown as {
   pool: Pool;
 };
 
+function getDatabaseUrl(): string {
+  const url = process.env.DATABASE_URL ?? "";
+  if (!url) return url;
+  // Avoid pg v9 SSL deprecation warning (require → verify-full)
+  if (url.includes("sslmode=require") && !url.includes("sslmode=verify-full")) {
+    return url.replace(/sslmode=require/g, "sslmode=verify-full");
+  }
+  return url;
+}
+
 function createPrismaClient() {
   const pool =
     globalForPrisma.pool ??
     new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: getDatabaseUrl(),
       connectionTimeoutMillis: 15000,
       max: 3,
     });

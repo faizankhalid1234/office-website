@@ -10,7 +10,7 @@ export const PETROL_PRICE_PKR_PER_LITER = Math.round(PETROL_PRICE_CLP_PER_LITER 
 
 export const CURRENCY_LABELS: Record<CurrencyCode, string> = {
   PKR: "Pakistani Rupee (₨)",
-  CLP: "Chilean Peso ($)",
+  CLP: "Chilean Peso (CLP)",
 };
 
 export function isCurrencyCode(value: string): value is CurrencyCode {
@@ -37,13 +37,18 @@ export function convertCurrency(
 }
 
 export function formatMoney(amount: number, currency: CurrencyCode): string {
-  const locale = currency === "CLP" ? "es-CL" : "en-PK";
-  return new Intl.NumberFormat(locale, {
+  const rounded = Math.round(amount);
+  if (currency === "CLP") {
+    return `${new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: 0,
+    }).format(rounded)} CLP`;
+  }
+  return new Intl.NumberFormat("en-PK", {
     style: "currency",
-    currency,
+    currency: "PKR",
     minimumFractionDigits: 0,
-    maximumFractionDigits: currency === "CLP" ? 0 : 0,
-  }).format(amount);
+    maximumFractionDigits: 0,
+  }).format(rounded);
 }
 
 export function formatDualMoney(amount: number, sourceCurrency: CurrencyCode): string {

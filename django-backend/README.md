@@ -13,25 +13,36 @@ Python Django backend for **user email & password management**.
 - Expense dashboard UI
 - Expenses, categories, reports, budget
 
-## Setup
+## Setup (Windows — easy)
 
+**Important:** Django is inside `django-backend` folder — NOT `office-expense` root.
+
+Double-click from project root:
+```
+SETUP-DJANGO-ADMIN.bat
+```
+It will ask for **your email, name, and password** (you choose).
+
+Or manually:
 ```bash
 cd django-backend
 python -m venv venv
 venv\Scripts\activate        # Windows
 pip install -r requirements.txt
-python setup.py              # migrate + create admin
-python manage.py runserver   # http://localhost:8000
+python setup.py              # prompts for YOUR admin email & password
+start-admin.bat              # http://localhost:8000/admin
+```
+
+Custom admin without prompts:
+```bash
+python setup.py --email you@mail.com --name "Your Name" --password yourpass --skip-demo
 ```
 
 ## Admin Panel
 
 Open **http://localhost:8000/admin**
 
-| Field | Value |
-|-------|-------|
-| Email | admin@hhhusain.com |
-| Password | admin123 |
+Login with the **email and password you set** in `setup.py`.
 
 From admin you can:
 - Add new users with email & password

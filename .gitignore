@@ -30,9 +30,15 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — keep .env.example templates in repo
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
 railway-variables.json
+!.env.example
+!**/.env.example
 
 # vercel
 .vercel
@@ -46,7 +52,26 @@ next-env.d.ts
 # uploads
 /public/uploads/
 
-# django backend
+# django backend + python
+/venv/
+venv/
+**/venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.egg-info/
+.eggs/
+pip-log.txt
+pip-delete-this-directory.txt
+
 /django-backend/venv/
 /django-backend/db.sqlite3
 /django-backend/**/__pycache__/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+Thumbs.db
