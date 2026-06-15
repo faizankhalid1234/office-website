@@ -17,7 +17,7 @@ interface AuthFormProps {
 }
 
 const features = [
-  { icon: Wallet, text: "Track fuel, tea & lunch expenses" },
+  { icon: Wallet, text: "Track fuel & office expenses" },
   { icon: BarChart3, text: "Beautiful charts & reports" },
   { icon: Shield, text: "Secure admin panel" },
 ];

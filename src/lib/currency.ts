@@ -4,10 +4,6 @@ export type CurrencyCode = "PKR" | "CLP";
 export const CLP_TO_PKR = 0.31;
 export const PKR_TO_CLP = 1 / CLP_TO_PKR;
 
-/** Chile petrol price per liter (Mar 2026 reference) */
-export const PETROL_PRICE_CLP_PER_LITER = 1596.35;
-export const PETROL_PRICE_PKR_PER_LITER = Math.round(PETROL_PRICE_CLP_PER_LITER * CLP_TO_PKR);
-
 export const CURRENCY_LABELS: Record<CurrencyCode, string> = {
   PKR: "Pakistani Rupee (₨)",
   CLP: "Chilean Peso (CLP)",
@@ -55,10 +51,6 @@ export function formatDualMoney(amount: number, sourceCurrency: CurrencyCode): s
   const pkr = toPKR(amount, sourceCurrency);
   const clp = toCLP(amount, sourceCurrency);
   return `${formatMoney(pkr, "PKR")} · ${formatMoney(clp, "CLP")}`;
-}
-
-export function petrolRateForCurrency(currency: CurrencyCode): number {
-  return currency === "CLP" ? PETROL_PRICE_CLP_PER_LITER : PETROL_PRICE_PKR_PER_LITER;
 }
 
 export function currencySymbol(currency: CurrencyCode): string {

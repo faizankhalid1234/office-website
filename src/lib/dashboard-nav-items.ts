@@ -18,7 +18,7 @@ export type DashboardNavItem = {
 
 export const dashboardNavItems: DashboardNavItem[] = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, description: "Summary & totals" },
-  { href: "/dashboard/quick-add", label: "Quick Add", icon: Zap, description: "Fuel, tea & lunch" },
+  { href: "/dashboard/quick-add", label: "Quick Add", icon: Zap, description: "Add fuel expense" },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3, description: "Charts & trends" },
   { href: "/dashboard/insights", label: "Insights", icon: Lightbulb, description: "Key highlights" },
   { href: "/dashboard/budget", label: "Budget", icon: Wallet, description: "Monthly limit" },

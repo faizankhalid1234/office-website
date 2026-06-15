@@ -6,7 +6,7 @@ export default function DashboardQuickAddPage() {
     <div className="space-y-4">
       <SectionHeader
         title="Quick Add"
-        description="Record fuel, tea, or lunch in seconds"
+        description="Record fuel in seconds"
       />
       <QuickExpenseWrapper />
     </div>

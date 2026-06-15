@@ -11,7 +11,13 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { CurrencySelect } from "@/components/currency/currency-select";
 import { useInputCurrency } from "@/components/currency/currency-provider";
-import { CLP_TO_PKR, PETROL_PRICE_CLP_PER_LITER, PETROL_PRICE_PKR_PER_LITER } from "@/lib/currency";
+import {
+  CLP_TO_PKR,
+  FUEL_PRICES_LAST_UPDATED,
+  CHILE_FUEL_PRICES,
+  PAKISTAN_FUEL_PRICES,
+  pakistanFuelPricePKR,
+} from "@/lib/fuel-prices";
 
 interface SettingsViewProps {
   user: { name: string; email: string; role: string };
@@ -106,9 +112,21 @@ export function SettingsView({ user, companyName, djangoAdminUrl }: SettingsView
         </CardHeader>
         <CardContent className="space-y-3">
           <CurrencySelect value={inputCurrency} onChange={setInputCurrency} />
-          <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
-            <p>1 CLP = {CLP_TO_PKR} PKR</p>
-            <p>Chile petrol: {PETROL_PRICE_CLP_PER_LITER} CLP/L (~{PETROL_PRICE_PKR_PER_LITER} PKR/L)</p>
+          <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground space-y-2">
+            <p className="font-medium text-foreground">Chile (CLP/L) · Updated {FUEL_PRICES_LAST_UPDATED}</p>
+            {Object.entries(CHILE_FUEL_PRICES).map(([key, entry]) => (
+              <p key={`cl-${key}`}>
+                {entry.label}: {entry.clpPerLiter.toLocaleString("en-US")} CLP
+                {entry.usdPerLiter != null ? ` · $${entry.usdPerLiter} USD` : ""}
+              </p>
+            ))}
+            <p className="font-medium text-foreground pt-1">Pakistan (Rs/L)</p>
+            {Object.entries(PAKISTAN_FUEL_PRICES).map(([key, entry]) => (
+              <p key={`pk-${key}`}>
+                {entry.label}: Rs {entry.pkrPerLiter.toFixed(2)}
+              </p>
+            ))}
+            <p className="text-[10px]">1 CLP = {CLP_TO_PKR} PKR (for conversion)</p>
           </div>
         </CardContent>
       </Card>

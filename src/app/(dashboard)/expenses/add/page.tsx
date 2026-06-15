@@ -11,7 +11,7 @@ export default async function AddExpensePage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Add Expense</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Quickly add fuel, tea, lunch, or any other expense
+          Quickly add fuel or any other expense
         </p>
       </div>
 

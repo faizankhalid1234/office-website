@@ -128,16 +128,30 @@ export function ExpensesList({
           </div>
 
           <div className="hidden overflow-x-auto md:block">
-            <Table>
+            <Table className="text-xs">
               <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Payment</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead>Receipt</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="h-8 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Title
+                  </TableHead>
+                  <TableHead className="h-8 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Category
+                  </TableHead>
+                  <TableHead className="h-8 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Date
+                  </TableHead>
+                  <TableHead className="h-8 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Payment
+                  </TableHead>
+                  <TableHead className="h-8 text-right text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Amount
+                  </TableHead>
+                  <TableHead className="h-8 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Receipt
+                  </TableHead>
+                  <TableHead className="h-8 text-right text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -149,15 +163,15 @@ export function ExpensesList({
                   </TableRow>
                 ) : (
                   filtered.map((expense) => (
-                    <TableRow key={expense.id}>
-                      <TableCell>
+                    <TableRow key={expense.id} className="text-xs">
+                      <TableCell className="py-2.5">
                         <div>
-                          <p className="font-medium">{expense.title}</p>
-                          <p className="text-xs text-muted-foreground">{expense.user.name}</p>
+                          <p className="text-xs font-medium leading-snug">{expense.title}</p>
+                          <p className="text-[10px] text-muted-foreground">{expense.user.name}</p>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="gap-1">
+                      <TableCell className="py-2.5">
+                        <Badge variant="secondary" className="gap-1 text-[10px]">
                           <span
                             className="h-1.5 w-1.5 rounded-full"
                             style={{ backgroundColor: expense.category.color }}
@@ -165,22 +179,26 @@ export function ExpensesList({
                           {expense.category.name}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm">{formatDate(expense.date)}</TableCell>
-                      <TableCell className="text-sm">{paymentLabel(expense.paymentMethod)}</TableCell>
-                      <TableCell className="text-right font-semibold">
+                      <TableCell className="py-2.5 text-[11px] text-muted-foreground">
+                        {formatDate(expense.date)}
+                      </TableCell>
+                      <TableCell className="py-2.5 text-[11px] text-muted-foreground">
+                        {paymentLabel(expense.paymentMethod)}
+                      </TableCell>
+                      <TableCell className="py-2.5 text-right">
                         <CurrencyAmount
                           amount={expense.amount}
                           currency={expense.currency ?? "PKR"}
                           size="sm"
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="py-2.5">
                         {expense.receiptUrl ? (
                           <a
                             href={expense.receiptUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center text-primary hover:underline text-sm"
+                            className="inline-flex items-center text-primary hover:underline text-xs"
                           >
                             {expense.receiptUrl.endsWith(".pdf") ? (
                               <FileText className="h-4 w-4" />
@@ -189,10 +207,10 @@ export function ExpensesList({
                             )}
                           </a>
                         ) : (
-                          <span className="text-muted-foreground text-sm">—</span>
+                          <span className="text-muted-foreground text-[10px]">—</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="py-2.5 text-right">
                         <div className="flex justify-end gap-1">
                           <Link
                             href={`/expenses/${expense.id}/edit`}
