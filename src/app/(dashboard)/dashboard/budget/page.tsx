@@ -21,14 +21,14 @@ export default async function DashboardBudgetPage() {
         />
       ) : (
         <div className="soft-card flex flex-col items-center gap-3 p-10 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 dark:bg-indigo-500/20">
-            <Wallet className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+            <Wallet className="h-5 w-5 text-primary" />
           </div>
           <p className="font-semibold text-foreground">No budget set</p>
           <p className="text-sm text-muted-foreground">Admin can set a monthly spending limit</p>
           <Link
             href="/budget"
-            className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
+            className="rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90"
           >
             Set Budget
           </Link>

@@ -16,7 +16,7 @@ export default async function DashboardAnalyticsPage() {
         action={
           <Link
             href="/reports"
-            className="text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+            className="text-xs font-medium text-primary hover:underline"
           >
             Full Reports →
           </Link>

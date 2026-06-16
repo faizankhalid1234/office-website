@@ -167,7 +167,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyData[] }) {
                 className="text-muted-foreground"
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="amount" fill="#818cf8" radius={[6, 6, 0, 0]} maxBarSize={36} />
+              <Bar dataKey="amount" fill="#14b8a6" radius={[6, 6, 0, 0]} maxBarSize={36} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -211,10 +211,10 @@ export function ExpenseTrendChart({ data }: { data: TrendData[] }) {
                 <Line
                   type="monotone"
                   dataKey="amount"
-                  stroke="#818cf8"
+                  stroke="#14b8a6"
                   strokeWidth={2.5}
                   dot={false}
-                  activeDot={{ r: 4, fill: "#6366f1" }}
+                  activeDot={{ r: 4, fill: "#0d9488" }}
                 />
               </LineChart>
             </ResponsiveContainer>

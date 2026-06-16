@@ -101,10 +101,10 @@ export function AuthForm({ mode }: AuthFormProps) {
   return (
     <div className="flex min-h-screen min-h-[100dvh]">
       {/* Left — Brand panel */}
-      <div className="relative hidden w-1/2 overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 lg:flex lg:flex-col lg:justify-between lg:p-12">
-        <div className="absolute inset-0 mesh-bg opacity-30" />
-        <div className="absolute -left-20 top-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -right-10 bottom-20 h-60 w-60 rounded-full bg-violet-400/20 blur-3xl" />
+      <div className="relative hidden w-1/2 overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 lg:flex lg:flex-col lg:justify-between lg:p-12">
+        <div className="absolute inset-0 mesh-bg opacity-20" />
+        <div className="absolute -left-20 top-20 h-72 w-72 rounded-full bg-teal-500/10 blur-3xl" />
+        <div className="absolute -right-10 bottom-20 h-60 w-60 rounded-full bg-primary/15 blur-3xl" />
 
         <div className="relative">
           <CompanyLogo size="xl" subtitle="Expense Manager" variant="light" />
@@ -112,14 +112,14 @@ export function AuthForm({ mode }: AuthFormProps) {
 
         <div className="relative space-y-8">
           <div>
-            <p className="text-sm text-indigo-100/90">
+            <p className="text-sm text-slate-300">
               Smart office expense management for your team
             </p>
           </div>
 
           <div className="space-y-4">
             {features.map((f) => (
-              <div key={f.text} className="flex items-center gap-3 text-indigo-100">
+              <div key={f.text} className="flex items-center gap-3 text-slate-200">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 border border-white/10">
                   <f.icon className="h-4 w-4" />
                 </div>
@@ -129,7 +129,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           </div>
         </div>
 
-        <p className="relative text-xs text-indigo-200/50">
+        <p className="relative text-xs text-slate-500">
           © 2026 {COMPANY_NAME}. All rights reserved.
         </p>
       </div>
@@ -148,8 +148,8 @@ export function AuthForm({ mode }: AuthFormProps) {
               <CompanyLogo size="md" subtitle="Expense Manager" />
             </div>
             <div className="mb-2 flex items-center gap-2 justify-center lg:justify-start">
-              <Sparkles className="h-4 w-4 text-indigo-500" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary">
                 {mode === "login" ? "Welcome back" : "Get started"}
               </span>
             </div>
@@ -211,7 +211,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               </div>
               <Button
                 type="submit"
-                className="h-10 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-xs font-semibold shadow-lg shadow-indigo-500/30 hover:from-indigo-500 hover:to-violet-500"
+                className="h-10 w-full rounded-xl text-xs font-semibold shadow-md shadow-primary/20"
                 disabled={loading}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -225,14 +225,14 @@ export function AuthForm({ mode }: AuthFormProps) {
               {mode === "login" ? (
                 <>
                   Don&apos;t have an account?{" "}
-                  <Link href="/auth/register" className="font-semibold text-indigo-600 hover:underline dark:text-indigo-400">
+                  <Link href="/auth/register" className="font-semibold text-primary hover:underline">
                     Register
                   </Link>
                 </>
               ) : (
                 <>
                   Already have an account?{" "}
-                  <Link href="/auth/login" className="font-semibold text-indigo-600 hover:underline dark:text-indigo-400">
+                  <Link href="/auth/login" className="font-semibold text-primary hover:underline">
                     Sign in
                   </Link>
                 </>
@@ -240,7 +240,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             </p>
 
             {mode === "login" && (
-              <div className="mt-4 rounded-2xl bg-indigo-50/80 p-3 text-[11px] text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
+              <div className="mt-4 rounded-2xl bg-primary/10 p-3 text-[11px] text-primary">
                 <p className="font-semibold mb-1">Demo Login</p>
                 <p>admin@hhhusain.com / admin123</p>
               </div>

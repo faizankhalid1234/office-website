@@ -39,11 +39,11 @@ export function CategoriesManager({ categories: initial }: { categories: Categor
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ name: "", color: "#6366f1", description: "" });
+  const [form, setForm] = useState({ name: "", color: "#0d9488", description: "" });
 
   function openCreate() {
     setEditing(null);
-    setForm({ name: "", color: "#6366f1", description: "" });
+    setForm({ name: "", color: "#0d9488", description: "" });
     setOpen(true);
   }
 

@@ -40,9 +40,9 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               className={cn(
                 "flex min-h-11 items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-all sm:text-base",
                 active
-                  ? "bg-gradient-to-r from-indigo-500/90 to-violet-500/90 text-white shadow-lg shadow-indigo-500/30"
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
                   : "text-white/70 hover:bg-white/8 hover:text-white",
-                item.highlight && !active && "border border-dashed border-indigo-400/30"
+                item.highlight && !active && "border border-dashed border-primary/40"
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
@@ -53,10 +53,10 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="shrink-0 border-t border-white/10 p-4">
-        <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/20 to-violet-600/20 p-4">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p className="truncate text-xs font-medium text-white">{session?.user?.name ?? "User"}</p>
           <p className="mt-0.5 truncate text-[10px] text-white/50">{session?.user?.email}</p>
-          <span className="mt-2 inline-block rounded-full bg-indigo-500/30 px-2 py-0.5 text-[10px] font-semibold text-white/90">
+          <span className="mt-2 inline-block rounded-full bg-primary/30 px-2 py-0.5 text-[10px] font-semibold text-white/90">
             {session?.user?.role ?? "EMPLOYEE"}
           </span>
         </div>

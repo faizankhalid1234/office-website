@@ -90,7 +90,7 @@ export async function getExpenseStats(userId: string) {
       return {
         name: cat?.name ?? "Unknown",
         value,
-        color: cat?.color ?? "#6366f1",
+        color: cat?.color ?? "#0d9488",
       };
     })
     .sort((a, b) => b.value - a.value);

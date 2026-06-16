@@ -19,13 +19,15 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SidebarContent } from "@/components/layout/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { CompanyLogo } from "@/components/brand/company-logo";
+import { useMounted } from "@/hooks/use-mounted";
 import { format } from "date-fns";
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const mounted = useMounted();
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
-  const today = format(new Date(), "EEEE, MMM d");
+  const today = mounted ? format(new Date(), "EEEE, MMM d") : "";
   const firstName = session?.user?.name?.split(" ")[0];
 
   const initials = session?.user?.name
@@ -45,7 +47,7 @@ export function Header() {
         <div className="flex min-w-0 flex-1 items-center gap-2.5 md:hidden">
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger
-              className="touch-target inline-flex shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400"
+              className="touch-target inline-flex shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary/15"
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" />
@@ -79,7 +81,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="touch-target hidden rounded-xl text-muted-foreground hover:bg-indigo-50 hover:text-indigo-600 sm:inline-flex dark:hover:bg-indigo-500/10"
+            className="touch-target hidden rounded-xl text-muted-foreground hover:bg-primary/10 hover:text-primary sm:inline-flex"
           >
             <Bell className="h-4 w-4" />
           </Button>
@@ -87,17 +89,24 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="touch-target relative rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
+            className="touch-target relative rounded-xl hover:bg-primary/10"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label="Toggle theme"
           >
-            <Sun className="h-4 w-4 rotate-0 scale-100 text-amber-500 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 text-indigo-400 transition-all dark:rotate-0 dark:scale-100" />
+            {mounted ? (
+              <>
+                <Sun className="h-4 w-4 rotate-0 scale-100 text-amber-500 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-4 w-4 rotate-90 scale-0 text-primary transition-all dark:rotate-0 dark:scale-100" />
+              </>
+            ) : (
+              <Sun className="h-4 w-4 text-muted-foreground" />
+            )}
           </Button>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="touch-target rounded-full outline-none ring-2 ring-transparent transition-all hover:ring-indigo-200 focus-visible:ring-indigo-400 dark:hover:ring-indigo-500/30">
+            <DropdownMenuTrigger className="touch-target rounded-full outline-none ring-2 ring-transparent transition-all hover:ring-primary/30 focus-visible:ring-primary">
               <Avatar className="h-9 w-9 sm:h-10 sm:w-10">
-                <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-violet-600 text-xs font-bold text-white">
+                <AvatarFallback className="bg-primary text-xs font-bold text-primary-foreground">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -110,7 +119,7 @@ export function Header() {
                     <span className="text-xs font-normal text-muted-foreground">
                       {session?.user?.email}
                     </span>
-                    <Badge className="mt-1 w-fit bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
+                    <Badge className="mt-1 w-fit bg-primary/15 text-primary">
                       {session?.user?.role}
                     </Badge>
                   </div>

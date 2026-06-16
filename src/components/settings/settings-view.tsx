@@ -11,8 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { CurrencySelect } from "@/components/currency/currency-select";
 import { useInputCurrency } from "@/components/currency/currency-provider";
+import { CLP_TO_PKR } from "@/lib/currency";
 import {
-  CLP_TO_PKR,
   FUEL_PRICES_LAST_UPDATED,
   CHILE_FUEL_PRICES,
   PAKISTAN_FUEL_PRICES,

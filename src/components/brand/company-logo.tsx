@@ -22,9 +22,9 @@ function LogoMark({ size = 44 }: { size?: number }) {
     >
       <defs>
         <linearGradient id="hh-bg" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#818cf8" />
-          <stop offset="0.5" stopColor="#6366f1" />
-          <stop offset="1" stopColor="#7c3aed" />
+          <stop stopColor="#2dd4bf" />
+          <stop offset="0.5" stopColor="#0d9488" />
+          <stop offset="1" stopColor="#0f766e" />
         </linearGradient>
         <linearGradient id="hh-shine" x1="16" y1="8" x2="48" y2="40" gradientUnits="userSpaceOnUse">
           <stop stopColor="#ffffff" stopOpacity="0.45" />
@@ -92,7 +92,7 @@ export function CompanyLogo({
     >
       <div
         className={cn(
-          "relative shrink-0 overflow-hidden shadow-lg shadow-indigo-500/30 ring-1 ring-white/20",
+          "relative shrink-0 overflow-hidden shadow-md shadow-primary/20 ring-1 ring-border/50",
           s.box
         )}
       >
@@ -119,7 +119,7 @@ export function CompanyLogoMark({ size = "md", className }: { size?: LogoSize; c
   return (
     <div
       className={cn(
-        "relative shrink-0 overflow-hidden shadow-lg shadow-indigo-500/30 ring-1 ring-white/20",
+        "relative shrink-0 overflow-hidden shadow-md shadow-primary/20 ring-1 ring-border/50",
         s.box,
         className
       )}

@@ -23,14 +23,14 @@ export const PAYMENT_METHODS = [
 ] as const;
 
 export const CHART_COLORS = [
-  "#6366f1",
-  "#8b5cf6",
-  "#ec4899",
+  "#0d9488",
+  "#14b8a6",
+  "#0891b2",
   "#f59e0b",
   "#10b981",
   "#3b82f6",
   "#ef4444",
-  "#14b8a6",
+  "#64748b",
   "#f97316",
   "#84cc16",
   "#06b6d4",

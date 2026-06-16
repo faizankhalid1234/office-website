@@ -37,7 +37,7 @@ export function RecentExpenses({ expenses }: { expenses: RecentExpense[] }) {
         </div>
         <Link
           href="/expenses"
-          className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+          className="flex items-center gap-1 text-xs font-medium text-primary hover:underline"
         >
           View all <ArrowRight className="h-3 w-3" />
         </Link>

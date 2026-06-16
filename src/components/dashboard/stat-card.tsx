@@ -19,9 +19,9 @@ const STYLES: Record<string, { bg: string; icon: string; accent: string }> = {
     accent: "border-sky-200 dark:border-sky-500/20",
   },
   trending: {
-    bg: "bg-violet-50 dark:bg-violet-500/10",
-    icon: "bg-violet-500 text-white",
-    accent: "border-violet-200 dark:border-violet-500/20",
+    bg: "bg-teal-50 dark:bg-teal-500/10",
+    icon: "bg-teal-600 text-white",
+    accent: "border-teal-200 dark:border-teal-500/20",
   },
   wallet: {
     bg: "bg-emerald-50 dark:bg-emerald-500/10",

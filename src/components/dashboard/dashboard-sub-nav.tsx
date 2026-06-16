@@ -44,14 +44,14 @@ export function DashboardSubNav() {
                 "min-h-[60px] min-w-[72px] flex-col items-center justify-center gap-1 rounded-xl px-2.5 py-2",
                 "md:min-h-0 md:min-w-0 md:w-full md:flex-row md:items-start md:gap-2.5 md:rounded-xl md:px-3 md:py-2.5 lg:gap-3 lg:py-3",
                 active
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                   : "bg-muted/30 text-foreground hover:bg-muted/60 md:bg-transparent active:scale-95"
               )}
             >
               <Icon
                 className={cn(
                   "h-5 w-5 shrink-0 pointer-events-none md:mt-0.5 md:h-4 md:w-4 lg:h-5 lg:w-5",
-                  active ? "text-white" : "text-indigo-500"
+                  active ? "text-primary-foreground" : "text-primary"
                 )}
               />
               <span className="min-w-0 flex-1 pointer-events-none text-center md:text-left">

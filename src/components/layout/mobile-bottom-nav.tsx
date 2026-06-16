@@ -54,7 +54,7 @@ export function MobileBottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-border/40 bg-white/95 shadow-[0_-8px_32px_-8px_rgba(99,102,241,0.15)] backdrop-blur-xl dark:bg-background/95 md:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-border/40 bg-white/95 shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:bg-background/95 md:hidden"
       aria-label="Main navigation"
     >
       <div
@@ -74,10 +74,8 @@ export function MobileBottomNav() {
               >
                 <span
                   className={cn(
-                    "flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg shadow-indigo-500/40 transition-transform active:scale-95",
-                    active
-                      ? "bg-gradient-to-br from-indigo-500 to-violet-600 ring-2 ring-indigo-300/50"
-                      : "bg-gradient-to-br from-indigo-500 to-violet-600"
+                    "flex h-12 w-12 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/30 transition-transform active:scale-95",
+                    active && "ring-2 ring-primary/40"
                   )}
                 >
                   <Icon className="h-6 w-6 text-white" strokeWidth={2.25} />
@@ -85,7 +83,7 @@ export function MobileBottomNav() {
                 <span
                   className={cn(
                     "mt-1 text-[10px] font-semibold",
-                    active ? "text-indigo-600 dark:text-indigo-400" : "text-muted-foreground"
+                    active ? "text-primary" : "text-muted-foreground"
                   )}
                 >
                   {item.label}
@@ -101,14 +99,14 @@ export function MobileBottomNav() {
               className={cn(
                 "flex min-h-[52px] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1 transition-colors active:scale-95",
                 active
-                  ? "text-indigo-600 dark:text-indigo-400"
+                  ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
               <span
                 className={cn(
                   "flex h-8 w-8 items-center justify-center rounded-xl transition-colors",
-                  active && "bg-indigo-100 dark:bg-indigo-500/15"
+                  active && "bg-primary/10"
                 )}
               >
                 <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 2} />

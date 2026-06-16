@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { COMPANY_NAME } from "@/lib/constants";
+import { auth } from "@/auth";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -41,24 +42,31 @@ export const viewport: Viewport = {
   maximumScale: 5,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#6366f1" },
-    { media: "(prefers-color-scheme: dark)", color: "#1e1b4b" },
+    { media: "(prefers-color-scheme: light)", color: "#0d9488" },
+    { media: "(prefers-color-scheme: dark)", color: "#1e293b" },
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let session = null;
+  try {
+    session = await auth();
+  } catch (error) {
+    console.error("[layout] Failed to read session:", error);
+  }
+
   return (
     <html
       lang="en"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${plusJakarta.variable} h-full`}
     >
-      <body className="min-h-full antialiased">
-        <Providers>{children}</Providers>
+      <body className="min-h-full antialiased" suppressHydrationWarning>
+        <Providers session={session}>{children}</Providers>
         <script
           dangerouslySetInnerHTML={{
             __html: `

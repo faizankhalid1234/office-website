@@ -34,7 +34,7 @@ export function DashboardHero({ firstName, today }: DashboardHeroProps) {
       <div className="flex w-full shrink-0 flex-col gap-2 min-[400px]:flex-row sm:w-auto">
         <Link
           href="/dashboard/quick-add"
-          className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 sm:flex-none sm:px-5 md:text-base"
+          className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 sm:flex-none sm:px-5 md:text-base"
         >
           <Plus className="h-4 w-4 shrink-0" />
           Quick Add
@@ -43,7 +43,7 @@ export function DashboardHero({ firstName, today }: DashboardHeroProps) {
           href="/reports"
           className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted/50 sm:flex-none sm:px-5 md:text-base"
         >
-          <BarChart3 className="h-4 w-4 shrink-0 text-indigo-500" />
+          <BarChart3 className="h-4 w-4 shrink-0 text-primary" />
           Reports
         </Link>
       </div>

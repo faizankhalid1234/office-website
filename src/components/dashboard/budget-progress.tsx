@@ -37,8 +37,8 @@ export function BudgetProgress({ amount, used, remaining, percentage }: BudgetPr
     >
       <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-500/20">
-            <Wallet className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+            <Wallet className="h-4 w-4 text-primary" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-foreground">Monthly Budget</h3>
@@ -47,7 +47,7 @@ export function BudgetProgress({ amount, used, remaining, percentage }: BudgetPr
         </div>
         <Link
           href="/budget"
-          className="text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+          className="text-xs font-medium text-primary hover:underline"
         >
           Manage
         </Link>

@@ -28,7 +28,7 @@ export default async function ExpensesPage() {
         </div>
         <Link
           href="/expenses/add"
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 text-sm font-semibold text-white shadow-md shadow-indigo-500/25 transition hover:from-indigo-500 hover:to-violet-500 sm:w-auto sm:px-5"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 transition hover:bg-primary/90 sm:w-auto sm:px-5"
         >
           <Plus className="h-4 w-4" />
           Add Expense

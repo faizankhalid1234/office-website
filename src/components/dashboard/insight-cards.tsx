@@ -29,14 +29,14 @@ export function InsightCards({
       label: "Transactions",
       value: monthCount.toString(),
       icon: Hash,
-      iconBg: "bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400",
+      iconBg: "bg-primary/10 text-primary",
     },
     {
       label: "Top Category",
       value: highestCategory?.name ?? "—",
       sub: highestCategory ? formatDualCurrency(highestCategory.value, "PKR") : null,
       icon: Award,
-      iconBg: "bg-violet-100 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400",
+      iconBg: "bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-400",
       dot: highestCategory?.color,
     },
     {

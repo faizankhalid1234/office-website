@@ -281,7 +281,7 @@ export function ExpensesList({
                           href={expense.receiptUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400"
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-primary"
                         >
                           {expense.receiptUrl.endsWith(".pdf") ? (
                             <FileText className="h-3.5 w-3.5" />
@@ -297,7 +297,7 @@ export function ExpensesList({
                     <div className="flex gap-1">
                       <Link
                         href={`/expenses/${expense.id}/edit`}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary"
                       >
                         <Pencil className="h-4 w-4" />
                       </Link>
