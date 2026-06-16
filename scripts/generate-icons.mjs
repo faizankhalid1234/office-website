@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const iconsDir = path.join(__dirname, "..", "public", "icons");
+const iconsDir = path.join(__dirname, "..", "p ublic", "icons");
 const svgPath = path.join(iconsDir, "icon.svg");
 
 async function main() {
