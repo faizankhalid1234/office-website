@@ -4,7 +4,9 @@ echo.
 echo ========================================
 echo   H.H Husain - Django Admin Setup
 echo ========================================
-echo   Folder: django-backend (correct path)
+echo   Folder: django-backend
+echo.
+echo   Aap apna EMAIL aur PASSWORD khud set karenge
 echo ========================================
 echo.
 
@@ -22,6 +24,7 @@ echo.
 python setup.py
 
 echo.
-echo To start admin panel, run: start-admin.bat
+echo Admin panel start: start-admin.bat
+echo URL: http://localhost:8000/admin
 echo.
 pause
