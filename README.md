@@ -1,92 +1,66 @@
-# H.H Husain - Office Expense Management System
+# H.H Husain — Office Expense (Frontend + Backend)
 
-Production-ready PWA for managing office expenses with a modern SaaS dashboard.
+Monorepo with **separate folders** for UI and API.
 
-## Tech Stack
+## Structure
 
-- **Next.js 16** (App Router) + TypeScript — Frontend dashboard
-- **Python Django** — User email & password backend + Admin panel
-- **Tailwind CSS** + **Shadcn UI**
-- **Prisma ORM** + **PostgreSQL** — Expenses data
-- **NextAuth** (JWT sessions, role-based access)
-- **Recharts** + **Framer Motion**
-- **PWA** (manifest + service worker)
-
-## Features
-
-- Dashboard with animated stats, charts, budget progress
-- Expense CRUD with receipt upload (image/PDF)
-- Category management (Admin)
-- Monthly reports with PDF/Excel export
-- Budget tracking with 80%/90%/100% alerts
-- Dark/Light mode
-- Mobile installable PWA
-
-## Getting Started
-
-**Terminal 1 — Django Auth Backend:**
-```bash
-cd django-backend
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-python setup.py
-python manage.py runserver
 ```
-Admin panel: [http://localhost:8000/admin](http://localhost:8000/admin)
+office-expense/
+├── frontend/     → Next.js employee website (port 3000)
+├── admin/        → Next.js admin panel (port 4000)
+├── backend/      → Node.js Express API (port 5000)
+└── package.json  → run all together
+```
 
-**Terminal 2 — Next.js Frontend:**
+| Folder | Role | Tech |
+|--------|------|------|
+| **frontend** | Employee website | Next.js 16, React, Tailwind |
+| **admin** | Admin panel | Next.js 16, React, Tailwind |
+| **backend** | Auth, users, expenses, DB | Express, MongoDB |
+
+## Quick start
+
 ```bash
-npm install
-cp .env.example .env
+# Install both
+npm run install:all
+
+# Database (backend)
 npm run db:push
 npm run db:seed
+
+# Install + create demo users in MongoDB (run once on a new machine)
+npm run setup
+
+# Run backend + frontend + admin together
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+- **Employee website:** http://localhost:3000/auth/login
+- **Admin panel:** http://localhost:4000/login
+- **Backend API:** http://localhost:5000/api/health
 
-## Demo Accounts
+## Demo accounts
 
-| Role     | Email                  | Password     |
-|----------|------------------------|--------------|
-| Admin    | admin@hhhusain.com     | admin123     |
-| Employee | employee@hhhusain.com  | employee123  |
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@hhhusain.com | admin123 |
+| Employee | employee@hhhusain.com | employee123 |
 
-## Pages
+## Scripts (root)
 
-| Route            | Access   | Description              |
-|------------------|----------|--------------------------|
-| `/`              | All      | Dashboard                |
-| `/expenses`      | All      | Expense list             |
-| `/expenses/add`  | All      | Add expense              |
-| `/categories`    | Admin    | Manage categories        |
-| `/reports`       | All      | Reports & export         |
-| `/budget`        | Admin    | Set monthly budget       |
-| `/settings`      | Admin    | App settings             |
-| `/auth/login`    | Public   | Sign in                  |
-| `/auth/register` | Public   | Register                 |
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Backend + Frontend + Admin |
+| `npm run dev:backend` | API only |
+| `npm run dev:frontend` | Employee website only |
+| `npm run dev:admin` | Admin panel only |
+| `npm run db:push` | Push Prisma schema |
+| `npm run db:seed` | Seed users & categories |
 
-## Scripts
+## Environment
 
-```bash
-npm run dev        # Development server
-npm run build      # Production build
-npm run db:push    # Push schema to DB
-npm run db:seed    # Seed categories & users
-npm run icons      # Generate PWA icons
-```
+**backend/.env** — `MONGODB_URI`, `JWT_SECRET`, `PORT=5000`, `FRONTEND_URL`, `ADMIN_URL`
 
-## PWA Install
+**frontend/.env** — `BACKEND_URL=http://localhost:5000`, `ADMIN_URL=http://localhost:4000`, `AUTH_SECRET`, `NEXTAUTH_URL`
 
-On mobile/desktop Chrome: Menu → **Install app** or **Add to Home Screen**.
-
-## Admin Panels
-
-**Django Admin** (`http://localhost:8000/admin`) — Manage users:
-- Create/edit user email & password
-- Set Admin or Employee role
-- Disable accounts
-
-**Next.js App** — Admin role pages:
-- Categories, Budget, Settings
+**admin/.env** — `BACKEND_URL=http://localhost:5000`, `NEXTAUTH_URL=http://localhost:4000`, `AUTH_SECRET`

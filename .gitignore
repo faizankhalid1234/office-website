@@ -1,8 +1,6 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -11,18 +9,21 @@
 !.yarn/versions
 
 # testing
-/coverage
+coverage/
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
-# production
-/build
+# production / build
+build/
+dist/
+backend/dist/
 
 # misc
 .DS_Store
 *.pem
+Thumbs.db
 
 # debug
 npm-debug.log*
@@ -45,15 +46,16 @@ railway-variables.json
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
-/src/generated/prisma
+# prisma generated (legacy)
+src/generated/prisma/
+**/src/generated/prisma/
 
 # uploads
-/public/uploads/
+public/uploads/
+backend/src/uploads/
 
-# django backend + python
-/venv/
+# python (legacy)
 venv/
 **/venv/
 __pycache__/
@@ -66,12 +68,12 @@ __pycache__/
 pip-log.txt
 pip-delete-this-directory.txt
 
-/django-backend/venv/
-/django-backend/db.sqlite3
-/django-backend/**/__pycache__/
-
-# IDE / OS
+# IDE / OS / editor
 .idea/
 .vscode/
+.cursor/
 *.swp
-Thumbs.db
+
+# local tooling / temp assets
+assets/
+terminals/

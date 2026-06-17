@@ -3,6 +3,5 @@ node_modules
 .git
 .env*
 railway-variables.json
-django-backend
 venv
 *.md
