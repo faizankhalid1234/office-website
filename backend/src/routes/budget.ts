@@ -97,3 +97,4 @@ budgetRouter.post("/", requireAuth, requireAdmin, async (req, res) => {
     updatedAt: budget.updatedAt,
   });
 });
+
