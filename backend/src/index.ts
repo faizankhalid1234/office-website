@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { connectMongo, disconnectMongo } from "./lib/mongo.js";
-import { createApp } from "./app.js";
+import { createApp } from "./express-app.js";
 
 const port = Number(process.env.PORT ?? process.env.BACKEND_PORT ?? 5000);
 

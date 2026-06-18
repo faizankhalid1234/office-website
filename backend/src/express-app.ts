@@ -19,16 +19,37 @@ export function createApp() {
   const frontendUrl = process.env.FRONTEND_URL ?? "http://localhost:3000";
   const adminUrl = process.env.ADMIN_URL ?? "http://localhost:4000";
 
+  const allowedOrigins = new Set([
+    frontendUrl,
+    adminUrl,
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:4000",
+    "http://127.0.0.1:4000",
+  ]);
+
+  for (const extra of (process.env.CORS_ORIGINS ?? "").split(",")) {
+    const trimmed = extra.trim();
+    if (trimmed) allowedOrigins.add(trimmed);
+  }
+
   app.use(
     cors({
-      origin: [
-        frontendUrl,
-        adminUrl,
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:4000",
-        "http://127.0.0.1:4000",
-      ],
+      origin(origin, callback) {
+        if (!origin) {
+          callback(null, true);
+          return;
+        }
+        if (allowedOrigins.has(origin)) {
+          callback(null, true);
+          return;
+        }
+        if (/^https:\/\/office-website[a-z0-9-]*\.vercel\.app$/i.test(origin)) {
+          callback(null, true);
+          return;
+        }
+        callback(new Error(`CORS blocked: ${origin}`));
+      },
       credentials: true,
     })
   );

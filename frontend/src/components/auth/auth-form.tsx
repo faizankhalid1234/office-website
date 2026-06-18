@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -12,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { COMPANY_NAME } from "@/lib/constants";
 import { APP_LINKS } from "@/lib/app-urls";
-import { apiPath } from "@/lib/api-config";
 import { useMounted } from "@/hooks/use-mounted";
 
 interface AuthFormProps {
@@ -44,40 +42,56 @@ export function AuthForm({ mode }: AuthFormProps) {
     toast.error(message);
   }, [mode, searchParams]);
 
+  const adminLoginUrl = APP_LINKS.adminLogin();
+
+  function getRedirectPath(): string {
+    const callback = searchParams.get("callbackUrl");
+    if (callback) {
+      try {
+        const url = new URL(callback, window.location.origin);
+        if (url.origin === window.location.origin) {
+          return `${url.pathname}${url.search}${url.hash}`;
+        }
+      } catch {
+        // ignore malformed callbackUrl
+      }
+    }
+    return "/dashboard";
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
 
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 20_000);
+
     try {
       if (mode === "register") {
-        const res = await fetch(apiPath("/api/auth/register"), {
+        const res = await fetch("/api/website/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(form),
+          signal: controller.signal,
         });
 
-        const contentType = res.headers.get("content-type") ?? "";
-        if (!contentType.includes("application/json")) {
-          throw new Error("Registration failed. Please try again.");
+        const data = (await res.json().catch(() => ({}))) as {
+          error?: string;
+          needsLogin?: boolean;
+        };
+
+        if (!res.ok) {
+          throw new Error(data.error ?? "Registration failed");
         }
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Registration failed");
-
-        const loginAfterRegister = await signIn("credentials", {
-          email: form.email.trim().toLowerCase(),
-          password: form.password,
-          redirect: false,
-        });
-
-        if (loginAfterRegister?.ok) {
-          toast.success("Account created! Welcome!");
-          window.location.href = "/dashboard";
+        if (data.needsLogin) {
+          toast.success("Account created! Please sign in.");
+          router.push("/auth/login");
           return;
         }
 
-        toast.success("Account created! Please sign in.");
-        router.push("/auth/login");
+        toast.success("Account created! Welcome!");
+        window.location.href = getRedirectPath();
         return;
       }
 
@@ -88,6 +102,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           email: form.email.trim().toLowerCase(),
           password: form.password,
         }),
+        signal: controller.signal,
       });
 
       const loginData = (await loginRes.json().catch(() => ({}))) as {
@@ -100,15 +115,18 @@ export function AuthForm({ mode }: AuthFormProps) {
       }
 
       toast.success("Welcome back!");
-      window.location.href = "/dashboard";
+      window.location.href = getRedirectPath();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Something went wrong");
+      if (err instanceof Error && err.name === "AbortError") {
+        toast.error("Request timed out. Check your connection and try again.");
+      } else {
+        toast.error(err instanceof Error ? err.message : "Something went wrong");
+      }
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
     }
   }
-
-  const adminLoginUrl = APP_LINKS.adminLogin();
 
   return (
     <div className="flex min-h-screen min-h-[100dvh]">

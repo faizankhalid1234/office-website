@@ -79,3 +79,5 @@ pip-delete-this-directory.txt
 # local tooling / temp assets
 assets/
 terminals/
+
+.vercel

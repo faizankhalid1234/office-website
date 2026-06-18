@@ -40,3 +40,5 @@ yarn-error.log*
 # temp
 tmp-*.txt
 tmp-*.json
+
+.vercel

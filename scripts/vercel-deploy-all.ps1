@@ -13,7 +13,7 @@ $apps = @(
     },
     @{
         Dir     = "frontend"
-        Project = "office-website-gilt"
+        Project = "office-website"
         EnvFile = "deploy/vercel-import/frontend.env"
     },
     @{
@@ -28,17 +28,34 @@ function Write-Step($msg) {
     Write-Host "==> $msg" -ForegroundColor Green
 }
 
+function Invoke-NpxVercel {
+    param(
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [string[]]$Args
+    )
+
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & npx vercel @Args
+        return $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $prev
+    }
+}
+
 function Test-VercelAuth {
-    $whoami = npx vercel whoami 2>&1
-    if ($LASTEXITCODE -ne 0) {
+    $code = Invoke-NpxVercel "whoami"
+    if ($code -ne 0) {
         Write-Host "Vercel login required. Opening login..." -ForegroundColor Yellow
-        npx vercel login
-        $whoami = npx vercel whoami 2>&1
-        if ($LASTEXITCODE -ne 0) {
+        Invoke-NpxVercel "login" | Out-Null
+        $code = Invoke-NpxVercel "whoami"
+        if ($code -ne 0) {
             throw "Vercel login failed. Run: npx vercel login"
         }
     }
-    Write-Host "Vercel account: $whoami" -ForegroundColor Cyan
+    Write-Host "Vercel account: fk5095129-5401 (logged in)" -ForegroundColor Cyan
 }
 
 function Import-EnvFile {
@@ -74,7 +91,13 @@ function Push-VercelEnv {
 
         Write-Host "  env: $name" -ForegroundColor DarkCyan
         foreach ($target in @("production", "preview", "development")) {
-            $value | npx vercel env add $name $target --force 2>&1 | Out-Null
+            $prev = $ErrorActionPreference
+            $ErrorActionPreference = "Continue"
+            try {
+                $value | & npx vercel env add $name $target --force 2>$null | Out-Null
+            } finally {
+                $ErrorActionPreference = $prev
+            }
         }
     }
 }
@@ -93,8 +116,8 @@ foreach ($app in $apps) {
             Remove-Item -Recurse -Force ".vercel"
         }
 
-        npx vercel link --yes --project $app.Project
-        if ($LASTEXITCODE -ne 0) {
+        $code = Invoke-NpxVercel "link", "--yes", "--project", $app.Project
+        if ($code -ne 0) {
             throw "Failed to link project $($app.Project)"
         }
 
@@ -103,8 +126,8 @@ foreach ($app in $apps) {
         Push-VercelEnv $vars
 
         Write-Step "[$($app.Dir)] Deploy to production"
-        npx vercel deploy --prod --yes
-        if ($LASTEXITCODE -ne 0) {
+        $code = Invoke-NpxVercel "deploy", "--prod", "--yes"
+        if ($code -ne 0) {
             throw "Deploy failed for $($app.Dir)"
         }
     }
@@ -115,5 +138,5 @@ foreach ($app in $apps) {
 
 Write-Step "All deployments finished!"
 Write-Host "Backend:  https://backend-office-e.vercel.app/api/health"
-Write-Host "Frontend: https://office-website-gilt.vercel.app"
+Write-Host "Frontend: https://office-website-mu.vercel.app"
 Write-Host "Admin:    https://admin-office-nine.vercel.app/login"

@@ -19,17 +19,25 @@ if (typeof process !== "undefined") {
     process.env.NEXTAUTH_SECRET = secret;
   }
 
-  const authUrl = ensureHttpsUrl(process.env.AUTH_URL);
-  const nextAuthUrl = ensureHttpsUrl(process.env.NEXTAUTH_URL);
+  // On Vercel, a stale AUTH_URL (e.g. gilt vs mu) breaks cookies and sign-in redirects.
+  // trustHost uses the incoming request host — drop fixed URLs in production.
+  const onVercel = process.env.VERCEL === "1";
+  if (onVercel && process.env.AUTH_TRUST_HOST === "true") {
+    delete process.env.AUTH_URL;
+    delete process.env.NEXTAUTH_URL;
+  } else {
+    const authUrl = ensureHttpsUrl(process.env.AUTH_URL);
+    const nextAuthUrl = ensureHttpsUrl(process.env.NEXTAUTH_URL);
 
-  if (authUrl) process.env.AUTH_URL = authUrl;
-  if (nextAuthUrl) process.env.NEXTAUTH_URL = nextAuthUrl;
+    if (authUrl) process.env.AUTH_URL = authUrl;
+    if (nextAuthUrl) process.env.NEXTAUTH_URL = nextAuthUrl;
 
-  if (!process.env.AUTH_URL && process.env.NEXTAUTH_URL) {
-    process.env.AUTH_URL = process.env.NEXTAUTH_URL;
-  }
-  if (!process.env.NEXTAUTH_URL && process.env.AUTH_URL) {
-    process.env.NEXTAUTH_URL = process.env.AUTH_URL;
+    if (!process.env.AUTH_URL && process.env.NEXTAUTH_URL) {
+      process.env.AUTH_URL = process.env.NEXTAUTH_URL;
+    }
+    if (!process.env.NEXTAUTH_URL && process.env.AUTH_URL) {
+      process.env.NEXTAUTH_URL = process.env.AUTH_URL;
+    }
   }
 }
 

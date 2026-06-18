@@ -16,7 +16,12 @@ export async function connectMongo(): Promise<void> {
 
   const uri = getMongoUri();
   try {
-    await mongoose.connect(uri);
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 8_000,
+      connectTimeoutMS: 8_000,
+      socketTimeoutMS: 15_000,
+      maxPoolSize: 5,
+    });
     console.log("[mongo] Connected to MongoDB");
   } catch (error) {
     const err = error as { code?: string; message?: string };
