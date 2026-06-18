@@ -1,9 +1,16 @@
+import { ensureHttpsUrl } from "@/lib/auth-env";
+
 export function getBackendUrl(): string {
-  const url =
+  const raw =
     process.env.NEXT_PUBLIC_BACKEND_URL?.trim() ||
     process.env.BACKEND_URL?.trim() ||
     "http://localhost:5000";
-  return url.replace(/\/$/, "");
+
+  if (raw.includes("localhost") || raw.includes("127.0.0.1")) {
+    return raw.replace(/\/$/, "");
+  }
+
+  return ensureHttpsUrl(raw) ?? raw.replace(/\/$/, "");
 }
 
 export function apiPath(path: string): string {

@@ -6,12 +6,19 @@ export const APP_PATHS = {
   settings: "/settings",
 } as const;
 
+function ensureHttpsUrl(value: string): string {
+  const trimmed = value.trim().replace(/\/$/, "");
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export function getWebsiteBaseUrl(): string {
   const url =
     process.env.NEXTAUTH_URL?.trim() ||
     process.env.AUTH_URL?.trim() ||
     "http://localhost:3000";
-  return url.replace(/\/$/, "");
+  if (url.includes("localhost")) return url.replace(/\/$/, "");
+  return ensureHttpsUrl(url);
 }
 
 export function getAdminBaseUrl(): string {
@@ -19,7 +26,8 @@ export function getAdminBaseUrl(): string {
     process.env.NEXT_PUBLIC_ADMIN_URL?.trim() ||
     process.env.ADMIN_URL?.trim() ||
     "http://localhost:4000";
-  return url.replace(/\/$/, "");
+  if (url.includes("localhost")) return url.replace(/\/$/, "");
+  return ensureHttpsUrl(url);
 }
 
 export function appUrl(path: string, baseUrl?: string): string {

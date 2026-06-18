@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Loader2, Shield, BarChart3, Wallet, Sparkles } from "lucide-react";
@@ -27,9 +27,22 @@ const features = [
 
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const mounted = useMounted();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+
+  useEffect(() => {
+    if (mode !== "login") return;
+    const error = searchParams.get("error");
+    if (!error) return;
+
+    const message =
+      error === "CredentialsSignin"
+        ? "Invalid email or password"
+        : "Sign in failed. Please try again.";
+    toast.error(message);
+  }, [mode, searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -68,28 +81,21 @@ export function AuthForm({ mode }: AuthFormProps) {
         return;
       }
 
-      const result = await signIn("credentials", {
-        email: form.email.trim().toLowerCase(),
-        password: form.password,
-        redirect: false,
+      const loginRes = await fetch("/api/website/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email.trim().toLowerCase(),
+          password: form.password,
+        }),
       });
 
-      if (!result) {
-        toast.error("Login failed. Please try again.");
-        return;
-      }
+      const loginData = (await loginRes.json().catch(() => ({}))) as {
+        error?: string;
+      };
 
-      if (result.error) {
-        toast.error(
-          result.error === "CredentialsSignin"
-            ? "Invalid email or password"
-            : "Login failed. Check your connection and try again."
-        );
-        return;
-      }
-
-      if (!result.ok) {
-        toast.error("Login failed. Please try again.");
+      if (!loginRes.ok) {
+        toast.error(loginData.error ?? "Invalid email or password");
         return;
       }
 
