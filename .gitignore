@@ -43,6 +43,8 @@ railway-variables.json
 
 # vercel
 .vercel
+deploy/vercel-import/*.env
+!deploy/vercel-import/*.env.example
 
 # typescript
 *.tsbuildinfo
