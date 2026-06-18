@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import {
@@ -18,12 +18,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { APP_PATHS, APP_LINKS } from "@/lib/app-urls";
-import { apiPath } from "@/lib/api-config";
 import { COMPANY_NAME } from "@/lib/constants";
 
 export function AdminLoginPage() {
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (!error) return;
+
+    const message =
+      error === "CredentialsSignin"
+        ? "Invalid email or password"
+        : "Sign in failed. Please try again.";
+    toast.error(message);
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,45 +43,18 @@ export function AdminLoginPage() {
     const email = form.email.trim().toLowerCase();
 
     try {
-      let loginRes: Response;
-      try {
-        loginRes = await fetch(apiPath("/api/auth/login"), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password: form.password }),
-        });
-      } catch {
-        toast.error(
-          "Cannot reach backend API. Run: npm run dev (backend must be on port 5000)"
-        );
-        return;
-      }
+      const loginRes = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: form.password }),
+      });
 
       const loginData = (await loginRes.json().catch(() => ({}))) as {
         error?: string;
-        user?: { role: string };
       };
 
       if (!loginRes.ok) {
         toast.error(loginData.error ?? "Invalid email or password");
-        return;
-      }
-
-      if (loginData.user?.role !== "ADMIN") {
-        toast.error(
-          "This portal is admin-only. Use the employee website to sign in."
-        );
-        return;
-      }
-
-      const result = await signIn("credentials", {
-        email,
-        password: form.password,
-        redirect: false,
-      });
-
-      if (!result?.ok || result.error) {
-        toast.error("Session could not be created. Try again.");
         return;
       }
 

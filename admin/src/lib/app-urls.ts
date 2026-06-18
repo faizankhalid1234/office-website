@@ -6,12 +6,18 @@ export const APP_PATHS = {
   adminBudget: "/budget",
 } as const;
 
+function ensureHttpsUrl(value: string): string {
+  const trimmed = value.trim().replace(/\/$/, "");
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export function getAdminBaseUrl(): string {
   const url =
     process.env.NEXTAUTH_URL?.trim() ||
     process.env.NEXT_PUBLIC_ADMIN_URL?.trim() ||
     "http://localhost:4000";
-  return url.replace(/\/$/, "");
+  return ensureHttpsUrl(url);
 }
 
 export function getWebsiteBaseUrl(): string {
@@ -19,7 +25,8 @@ export function getWebsiteBaseUrl(): string {
     process.env.NEXT_PUBLIC_WEBSITE_URL?.trim() ||
     process.env.WEBSITE_URL?.trim() ||
     "http://localhost:3000";
-  return url.replace(/\/$/, "");
+  if (url.includes("localhost")) return url.replace(/\/$/, "");
+  return ensureHttpsUrl(url);
 }
 
 export function appUrl(path: string, baseUrl?: string): string {
