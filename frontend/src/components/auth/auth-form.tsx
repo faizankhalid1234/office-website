@@ -274,8 +274,8 @@ export function AuthForm({ mode }: AuthFormProps) {
             {mode === "login" && (
               <div className="mt-4 rounded-2xl bg-primary/10 p-3 text-[11px] text-primary">
                 <p className="font-semibold mb-1">Demo accounts</p>
-                <p>Admin: admin@hhhusain.com / admin123</p>
-                <p className="mt-1">Employee: employee@hhhusain.com / employee123</p>
+                <p>Admin: hafiz@gmail.com / 12345678</p>
+                <p className="mt-1">Employee: hafiz@gmail.com / 12345678</p>
               </div>
             )}
 
