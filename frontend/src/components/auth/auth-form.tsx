@@ -36,9 +36,11 @@ export function AuthForm({ mode }: AuthFormProps) {
     if (!error) return;
 
     const message =
-      error === "CredentialsSignin"
-        ? "Invalid email or password"
-        : "Sign in failed. Please try again.";
+      error === "session_expired"
+        ? "Session expired. Please sign in again."
+        : error === "CredentialsSignin"
+          ? "Invalid email or password"
+          : "Sign in failed. Please try again.";
     toast.error(message);
   }, [mode, searchParams]);
 
