@@ -28,17 +28,16 @@ export async function serverApi<T>(
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      throw new Error((body as { error?: string }).error ?? `API error ${res.status}`);
+      const errorMessage = (body as { error?: string }).error ?? `API error ${res.status}`;
+      if (res.status === 401 || res.status === 403) {
+        redirect(`${APP_PATHS.adminLogin}?error=session_expired`);
+      }
+      throw new Error(errorMessage);
     }
 
     return res.json() as Promise<T>;
   } catch (error) {
-    if (error instanceof Error && error.message.includes("API error")) {
-      throw error;
-    }
-    console.error("[serverApi] Backend unreachable:", apiPath(path), error);
-    throw new Error(
-      "Cannot connect to backend API. Start it with: npm run dev:backend (port 5000)"
-    );
+    console.error("[serverApi] Backend error:", apiPath(path), error);
+    throw error;
   }
 }
