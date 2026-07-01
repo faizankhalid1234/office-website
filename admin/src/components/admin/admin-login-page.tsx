@@ -118,7 +118,7 @@ export function AdminLoginPage() {
             </div>
 
             <p className="text-xs text-violet-300/50">
-              Demo: admin@hhhusain.com / admin123
+              Demo: hafiz@gmail.com / 123456789
             </p>
           </div>
 

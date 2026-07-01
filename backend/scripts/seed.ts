@@ -31,12 +31,12 @@ async function main() {
     );
   }
 
-  const adminPassword = await bcrypt.hash("admin123", 12);
+  const adminPassword = await bcrypt.hash("123456789", 12);
   await User.findOneAndUpdate(
-    { email: "admin@hhhusain.com" },
+    { email: "hafiz@gmail.com" },
     {
-      name: "Admin",
-      email: "admin@hhhusain.com",
+      name: "Hafiz Admin",
+      email: "hafiz@gmail.com",
       password: adminPassword,
       role: "ADMIN",
       isActive: true,
@@ -44,7 +44,7 @@ async function main() {
     { upsert: true, new: true }
   );
 
-  const employeePassword = await bcrypt.hash("employee123", 12);
+  const employeePassword = await bcrypt.hash("123456789", 12);
   await User.findOneAndUpdate(
     { email: "employee@hhhusain.com" },
     {
